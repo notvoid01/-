@@ -471,10 +471,14 @@
     </div>
 
     <script>
+        // ★★★ Google Apps Script デプロイURL（設定済み）★★★
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxbLoOC960k0GDO0QxAf3yI44BVywUwN8AwE7LNro_dSvDBAT0p-dy7wCi3X2Zvc15e/exec';
+
         let selectedGender = null;
         let nickname = '';
         let currentQuestion = 0;
-        let answers = [];
+        let answers = [];           // スコア計算用
+        let answerTexts = [];       // スプレッドシート保存用（選択した回答テキスト）
         let totalScore = 0;
 
         // 男性用質問（18問）
@@ -668,7 +672,7 @@
 
         // 女性用質問（18問）
         const femaleQuestions = [
-            // カテゴリー1：オナニー事情（6問）
+            // カテゴリー1：セルフプレジャー事情（6問）
             {
                 category: "セルフプレジャー事情",
                 text: "正直なところ、セルフプレジャーの頻度は？",
@@ -886,6 +890,9 @@
             
             nickname = document.getElementById('nicknameInput').value.trim();
             
+            // 回答テキスト配列を18問分で初期化
+            answerTexts = new Array(18).fill('未回答');
+            
             document.getElementById('setup').style.display = 'none';
             document.getElementById('quiz').style.display = 'block';
             
@@ -929,7 +936,14 @@
             options.forEach(opt => opt.classList.remove('selected'));
             options[optionIndex].classList.add('selected');
             
-            answers[currentQuestion] = questions[currentQuestion].options[optionIndex].points;
+            const question = questions[currentQuestion];
+            const selectedOption = question.options[optionIndex];
+            
+            // スコア計算用
+            answers[currentQuestion] = selectedOption.points;
+            
+            // ★重要：回答テキストを保存（スプレッドシート用）
+            answerTexts[currentQuestion] = selectedOption.text;
             
             document.getElementById('nextBtn').disabled = false;
             document.getElementById('submitBtn').disabled = false;
@@ -1015,7 +1029,7 @@
             document.getElementById('resultDescription').textContent = description;
             document.getElementById('shareText').textContent = shareText;
 
-            // Google Apps Scriptへデータ送信（任意）
+            // ★Google Apps Scriptへデータ送信
             sendToGoogleSheets(totalScore, rank);
         }
 
@@ -1027,28 +1041,30 @@
         }
 
         function sendToGoogleSheets(score, rank) {
-            // 既存のGoogle Apps ScriptのURLを設定
-            const scriptUrl = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
-            
             const data = {
-                timestamp: new Date().toISOString(),
-                gender: selectedGender,
                 nickname: nickname || '匿名',
-                score: score,
+                gender: selectedGender,  // 'male' または 'female'
+                totalScore: score,
                 rank: rank,
-                userAgent: navigator.userAgent,
-                tool: 'libido-checker'
+                answers: answerTexts,    // ★18問の回答テキスト配列
+                userAgent: navigator.userAgent
             };
 
-            fetch(scriptUrl, {
+            console.log('送信データ確認:', data); // デバッグ用
+
+            fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
-                mode: 'no-cors',
+                mode: 'no-cors',  // CORSエラーを回避
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(data)
-            }).catch(error => {
-                console.log('データ送信エラー（無視してOK）:', error);
+            })
+            .then(() => {
+                console.log('データ送信完了（mode: no-corsのため詳細は不明）');
+            })
+            .catch(error => {
+                console.log('データ送信エラー:', error);
             });
         }
     </script>
