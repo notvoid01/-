@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>紳士力診断 〜Hidden Gentleman Protocol〜</title>
-    <meta name="description" content="あなたの隠れた紳士力を科学的に測定。完全フィクションのジョーク診断ツール。">
+    <title>男女別性欲チェッカー 〜Scientific Libido Analyzer〜</title>
+    <meta name="description" content="あなたの性欲レベルを科学的に測定する男女別診断ツール。完全匿名・フィクション。">
     <style>
         * {
             margin: 0;
@@ -13,164 +13,293 @@
         }
 
         body {
-            font-family: 'Georgia', 'Times New Roman', serif;
-            background: linear-gradient(135deg, #0A0E0D 0%, #1a1f1e 100%);
-            color: #E8E8E8;
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Sans', sans-serif;
+            background: linear-gradient(135deg, #1a0033 0%, #000000 50%, #330011 100%);
+            color: #FFE5F1;
             line-height: 1.6;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 20px;
+            position: relative;
         }
 
         header {
             text-align: center;
-            padding: 40px 20px;
-            border-bottom: 2px solid #D4AF37;
+            padding: 50px 20px;
+            border-bottom: 3px solid #FF1B5E;
             margin-bottom: 40px;
+            background: rgba(255, 27, 94, 0.05);
+            border-radius: 20px;
         }
 
         h1 {
-            font-size: 2.5em;
-            color: #D4AF37;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            font-size: 3em;
+            background: linear-gradient(45deg, #FF1B5E, #FF6B9D, #C147E9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            text-shadow: 0 0 30px rgba(255, 27, 94, 0.5);
+            font-weight: 900;
         }
 
         .subtitle {
-            font-size: 1.2em;
-            color: #2C5F2D;
+            font-size: 1.4em;
+            color: #FF6B9D;
             font-style: italic;
             margin-bottom: 20px;
+            letter-spacing: 3px;
         }
 
         .warning {
-            background: rgba(212, 175, 55, 0.1);
-            border: 2px solid #D4AF37;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 20px 0;
-            font-size: 0.95em;
+            background: rgba(255, 27, 94, 0.15);
+            border: 2px solid #FF1B5E;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            font-size: 1em;
         }
 
         .warning h3 {
-            color: #D4AF37;
-            margin-bottom: 10px;
+            color: #FF1B5E;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .setup-section {
+            background: rgba(196, 71, 233, 0.1);
+            border: 2px solid #C147E9;
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px 0;
+            text-align: center;
+        }
+
+        .nickname-input {
+            width: 100%;
+            max-width: 400px;
+            padding: 15px 20px;
+            font-size: 1.2em;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #FF1B5E;
+            border-radius: 10px;
+            color: #FFE5F1;
+            margin: 20px auto;
+            text-align: center;
+            display: block;
+        }
+
+        .nickname-input::placeholder {
+            color: #FF6B9D;
+        }
+
+        .gender-selection {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+
+        .gender-card {
+            background: rgba(255, 27, 94, 0.1);
+            border: 3px solid #FF1B5E;
+            border-radius: 25px;
+            padding: 50px 70px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            min-width: 220px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gender-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .gender-card:hover::before {
+            left: 100%;
+        }
+
+        .gender-card:hover {
+            background: rgba(255, 27, 94, 0.25);
+            transform: scale(1.05) translateY(-5px);
+            box-shadow: 0 10px 40px rgba(255, 27, 94, 0.4);
+        }
+
+        .gender-card.selected {
+            background: rgba(255, 27, 94, 0.35);
+            border-color: #FFE5F1;
+            box-shadow: 0 0 50px rgba(255, 27, 94, 0.6);
+        }
+
+        .gender-icon {
+            font-size: 4.5em;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .gender-label {
+            font-size: 1.6em;
+            color: #FF6B9D;
+            font-weight: bold;
         }
 
         .question-container {
-            background: rgba(44, 95, 45, 0.1);
-            border: 1px solid #2C5F2D;
-            border-radius: 10px;
-            padding: 25px;
-            margin-bottom: 25px;
+            background: rgba(255, 27, 94, 0.1);
+            border: 2px solid #FF1B5E;
+            border-radius: 20px;
+            padding: 35px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .question-category {
+            display: inline-block;
+            background: linear-gradient(45deg, #FF1B5E, #C147E9);
+            color: #FFFFFF;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-bottom: 20px;
         }
 
         .question-number {
-            color: #D4AF37;
+            color: #FF6B9D;
             font-weight: bold;
-            margin-bottom: 10px;
+            font-size: 1.1em;
+            margin-bottom: 15px;
         }
 
         .question-text {
-            font-size: 1.1em;
-            margin-bottom: 15px;
-            color: #E8E8E8;
+            font-size: 1.3em;
+            margin-bottom: 25px;
+            color: #FFE5F1;
+            font-weight: 500;
+            line-height: 1.5;
         }
 
         .options {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 15px;
         }
 
         .option {
-            background: rgba(10, 14, 13, 0.5);
-            border: 2px solid #2C5F2D;
-            border-radius: 8px;
-            padding: 15px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid #FF1B5E;
+            border-radius: 12px;
+            padding: 20px;
             cursor: pointer;
             transition: all 0.3s ease;
+            font-size: 1.1em;
+            position: relative;
         }
 
         .option:hover {
-            background: rgba(44, 95, 45, 0.3);
-            border-color: #D4AF37;
-            transform: translateX(5px);
+            background: rgba(255, 27, 94, 0.2);
+            border-color: #FF6B9D;
+            transform: translateX(10px);
+            box-shadow: 0 5px 20px rgba(255, 27, 94, 0.3);
         }
 
         .option.selected {
-            background: rgba(44, 95, 45, 0.5);
-            border-color: #D4AF37;
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+            background: rgba(255, 27, 94, 0.35);
+            border-color: #FFE5F1;
+            box-shadow: 0 0 25px rgba(255, 27, 94, 0.5);
         }
 
         .btn {
-            background: linear-gradient(135deg, #2C5F2D 0%, #1a3d1b 100%);
-            color: #D4AF37;
-            border: 2px solid #D4AF37;
-            padding: 15px 40px;
-            font-size: 1.2em;
-            border-radius: 8px;
+            background: linear-gradient(135deg, #FF1B5E 0%, #C147E9 100%);
+            color: #FFFFFF;
+            border: none;
+            padding: 20px 60px;
+            font-size: 1.4em;
+            border-radius: 50px;
             cursor: pointer;
             transition: all 0.3s ease;
             display: block;
-            margin: 30px auto;
-            font-family: 'Georgia', serif;
+            margin: 40px auto;
+            font-weight: bold;
+            box-shadow: 0 8px 25px rgba(255, 27, 94, 0.4);
         }
 
         .btn:hover {
-            background: linear-gradient(135deg, #1a3d1b 0%, #2C5F2D 100%);
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
-            transform: scale(1.05);
+            background: linear-gradient(135deg, #C147E9 0%, #FF1B5E 100%);
+            box-shadow: 0 12px 35px rgba(255, 27, 94, 0.6);
+            transform: scale(1.05) translateY(-2px);
         }
 
         .btn:disabled {
-            opacity: 0.5;
+            opacity: 0.4;
             cursor: not-allowed;
+            transform: none;
         }
 
         #result {
             display: none;
             text-align: center;
-            padding: 40px 20px;
+            padding: 60px 20px;
         }
 
         .score-display {
-            font-size: 4em;
-            color: #D4AF37;
-            font-weight: bold;
-            margin: 20px 0;
-            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+            font-size: 6em;
+            background: linear-gradient(45deg, #FF1B5E, #C147E9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 900;
+            margin: 40px 0;
+            text-shadow: 0 0 30px rgba(255, 27, 94, 0.8);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
 
         .rank-display {
-            font-size: 2em;
-            color: #2C5F2D;
-            margin: 20px 0;
-            padding: 20px;
-            background: rgba(212, 175, 55, 0.1);
-            border: 2px solid #D4AF37;
-            border-radius: 10px;
+            font-size: 2.8em;
+            color: #FF6B9D;
+            margin: 30px 0;
+            padding: 30px;
+            background: rgba(255, 27, 94, 0.2);
+            border: 3px solid #FF1B5E;
+            border-radius: 20px;
+            font-weight: bold;
         }
 
         .result-description {
-            font-size: 1.2em;
-            line-height: 1.8;
-            margin: 30px 0;
-            padding: 20px;
-            background: rgba(44, 95, 45, 0.1);
-            border-radius: 10px;
+            font-size: 1.3em;
+            line-height: 2;
+            margin: 40px 0;
+            padding: 35px;
+            background: rgba(196, 71, 233, 0.1);
+            border-radius: 20px;
+            text-align: left;
         }
 
         .share-section {
-            margin: 30px 0;
-            padding: 20px;
-            background: rgba(10, 14, 13, 0.5);
-            border-radius: 10px;
+            margin: 50px 0;
+            padding: 35px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
+            border: 2px solid #FF1B5E;
         }
 
         .modal {
@@ -180,66 +309,64 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.95);
             z-index: 1000;
             justify-content: center;
             align-items: center;
         }
 
         .modal-content {
-            background: linear-gradient(135deg, #0A0E0D 0%, #1a1f1e 100%);
-            border: 3px solid #D4AF37;
-            border-radius: 15px;
-            padding: 40px;
-            max-width: 500px;
+            background: linear-gradient(135deg, #1a0033 0%, #330011 100%);
+            border: 4px solid #FF1B5E;
+            border-radius: 25px;
+            padding: 60px;
+            max-width: 700px;
             text-align: center;
+            box-shadow: 0 0 60px rgba(255, 27, 94, 0.5);
         }
 
         .modal h2 {
-            color: #D4AF37;
-            margin-bottom: 20px;
+            color: #FF1B5E;
+            margin-bottom: 30px;
+            font-size: 2.5em;
         }
 
         .modal-buttons {
             display: flex;
-            gap: 20px;
+            gap: 30px;
             justify-content: center;
-            margin-top: 30px;
-        }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 1.8em;
-            }
-            
-            .score-display {
-                font-size: 3em;
-            }
-            
-            .rank-display {
-                font-size: 1.5em;
-            }
+            margin-top: 40px;
+            flex-wrap: wrap;
         }
 
         .progress-bar {
             width: 100%;
-            height: 30px;
-            background: rgba(10, 14, 13, 0.5);
-            border: 2px solid #2C5F2D;
-            border-radius: 15px;
-            margin: 20px 0;
+            height: 40px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #FF1B5E;
+            border-radius: 25px;
+            margin: 30px 0;
             overflow: hidden;
         }
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #2C5F2D 0%, #D4AF37 100%);
+            background: linear-gradient(90deg, #FF1B5E 0%, #C147E9 100%);
             transition: width 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #0A0E0D;
+            color: #FFFFFF;
             font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.2em; }
+            .score-display { font-size: 4em; }
+            .rank-display { font-size: 2em; }
+            .gender-card { padding: 35px 50px; min-width: 180px; }
+            .modal-content { padding: 40px; margin: 20px; }
         }
     </style>
 </head>
@@ -247,16 +374,20 @@
     <!-- 年齢確認モーダル -->
     <div id="ageModal" class="modal" style="display: flex;">
         <div class="modal-content">
-            <h2>🎩 年齢確認 🎩</h2>
-            <p style="margin: 20px 0; font-size: 1.1em;">
-                この診断は18歳以上の方を対象とした<br>
-                完全フィクションのジョークコンテンツです。
+            <h2>🔞 年齢確認 🔞</h2>
+            <p style="margin: 30px 0; font-size: 1.3em; line-height: 1.8;">
+                この診断は<strong style="color: #FF1B5E;">20歳以上</strong>の方を対象とした<br>
+                完全フィクション・エンターテイメントコンテンツです。
             </p>
-            <p style="color: #D4AF37; margin: 15px 0;">
-                あなたは18歳以上ですか？
+            <p style="color: #FF6B9D; margin: 25px 0; font-size: 1.2em;">
+                医学的・科学的根拠は一切ありません。<br>
+                ジョークとしてお楽しみください。
+            </p>
+            <p style="color: #FF1B5E; margin: 25px 0; font-size: 1.4em; font-weight: bold;">
+                あなたは20歳以上ですか？
             </p>
             <div class="modal-buttons">
-                <button class="btn" onclick="confirmAge(true)">はい（18歳以上）</button>
+                <button class="btn" onclick="confirmAge(true)">はい（20歳以上）</button>
                 <button class="btn" onclick="confirmAge(false)">いいえ</button>
             </div>
         </div>
@@ -264,26 +395,56 @@
 
     <div class="container">
         <header>
-            <h1>🎩 紳士力診断 🎩</h1>
-            <p class="subtitle">〜 Hidden Gentleman Protocol 〜</p>
-            <p>あなたの隠れた紳士力を科学的に測定します</p>
+            <h1>🔥 男女別性欲チェッカー 🔥</h1>
+            <p class="subtitle">〜 Scientific Libido Analyzer 〜</p>
+            <p style="font-size: 1.2em;">あなたの性欲レベルを科学的（？）に測定します</p>
         </header>
 
         <div class="warning">
-            <h3>⚠️ 重要な注意事項</h3>
+            <h3>⚠️ 必ずお読みください</h3>
             <p>
                 ・この診断は完全なフィクション・ジョークコンテンツです<br>
-                ・科学的根拠は一切ありません<br>
-                ・エンターテイメント目的でお楽しみください<br>
+                ・医学的・科学的根拠は一切ありません<br>
                 ・結果を真に受けないでください<br>
-                ・18歳未満の方はご利用いただけません
+                ・エンターテイメント目的でお楽しみください<br>
+                ・20歳未満の方はご利用いただけません<br>
+                ・入力されたデータは統計目的のみで使用され、個人を特定しません
             </p>
         </div>
 
-        <div id="quiz">
+        <!-- 設定画面 -->
+        <div id="setup">
+            <div class="setup-section">
+                <h3 style="color: #FF6B9D; margin-bottom: 25px; font-size: 1.8em;">診断設定</h3>
+                <p style="margin-bottom: 20px; font-size: 1.1em;">
+                    ニックネームを入力して、性別を選択してください
+                </p>
+                <input type="text" id="nicknameInput" class="nickname-input" placeholder="例：エロ太郎、ムラムラ花子" maxlength="20">
+                <p style="font-size: 0.9em; color: #FF6B9D; margin-bottom: 30px;">
+                    ※結果をシェアする際に表示されます（任意）
+                </p>
+                
+                <h4 style="color: #C147E9; margin: 30px 0 20px; font-size: 1.4em;">性別を選択してください</h4>
+                <div class="gender-selection">
+                    <div class="gender-card" onclick="selectGender('male')">
+                        <span class="gender-icon">♂️</span>
+                        <div class="gender-label">男性</div>
+                    </div>
+                    <div class="gender-card" onclick="selectGender('female')">
+                        <span class="gender-icon">♀️</span>
+                        <div class="gender-label">女性</div>
+                    </div>
+                </div>
+                
+                <button class="btn" id="startBtn" onclick="startQuiz()" disabled>診断スタート</button>
+            </div>
+        </div>
+
+        <!-- 診断画面 -->
+        <div id="quiz" style="display: none;">
             <div class="progress-bar">
                 <div class="progress-fill" id="progressBar" style="width: 0%;">
-                    <span id="progressText">0/36</span>
+                    <span id="progressText">0/18</span>
                 </div>
             </div>
             <div id="questionContainer"></div>
@@ -291,406 +452,444 @@
             <button class="btn" id="submitBtn" onclick="calculateResult()" style="display: none;">診断結果を見る</button>
         </div>
 
+        <!-- 結果画面 -->
         <div id="result">
-            <h2 style="color: #D4AF37; font-size: 2.5em; margin-bottom: 20px;">診断結果</h2>
+            <h2 style="color: #FF1B5E; font-size: 3.2em; margin-bottom: 30px;">診断結果</h2>
+            <div id="nicknameDisplay" style="font-size: 1.6em; color: #FF6B9D; margin-bottom: 25px;"></div>
             <div class="score-display" id="scoreDisplay">0</div>
-            <p style="font-size: 1.3em; color: #2C5F2D;">紳士力ポイント</p>
+            <p style="font-size: 1.6em; color: #FF6B9D; font-weight: bold;">性欲レベル</p>
             <div class="rank-display" id="rankDisplay"></div>
             <div class="result-description" id="resultDescription"></div>
             
             <div class="share-section">
-                <h3 style="color: #D4AF37; margin-bottom: 15px;">結果をシェア</h3>
-                <p id="shareText" style="margin-bottom: 15px;"></p>
-                <button class="btn" onclick="shareResult()">Twitterでシェア</button>
+                <h3 style="color: #FF1B5E; margin-bottom: 25px; font-size: 2em;">結果をシェア</h3>
+                <p id="shareText" style="margin-bottom: 25px; font-size: 1.2em;"></p>
+                <button class="btn" onclick="shareResult()">𝕏 (Twitter) でシェア</button>
                 <button class="btn" onclick="location.reload()">もう一度診断する</button>
             </div>
         </div>
     </div>
 
     <script>
-        // 質問データ（上記で設計した36問を配列形式で定義）
-        const questions = [
-            // カテゴリー1：観察眼・こだわり度
-            {
-                category: "observation",
-                text: "街中で異性を見かけたとき、最初に目が行きがちなところは？",
-                options: [
-                    { text: "全体の雰囲気・オーラ", points: 2 },
-                    { text: "ファッション・髪型全体", points: 4 },
-                    { text: "仕草・歩き方の細かい癖", points: 7 },
-                    { text: "……ここでは詳しく言えない「特定部位」", points: 12 }
-                ]
-            },
-            {
-                category: "observation",
-                text: "階段やエスカレーターで前に人がいる時、視線の管理は？",
-                options: [
-                    { text: "足元を見て安全確認", points: 1 },
-                    { text: "スマホを見て時間を潰す", points: 3 },
-                    { text: "景色や広告を眺める", points: 6 },
-                    { text: "「絶対領域」の出現を動体視力で捉える", points: 12 }
-                ]
-            },
-            {
-                category: "observation",
-                text: "YouTubeのおすすめ欄に出てくる動画の傾向は？",
-                options: [
-                    { text: "ニュースや教育系コンテンツ", points: 2 },
-                    { text: "エンタメ・バラエティ系", points: 4 },
-                    { text: "特定のマニアックなジャンル", points: 8 },
-                    { text: "サムネイルで「察してください」系", points: 13 }
-                ]
-            },
-            {
-                category: "observation",
-                text: "映画やアニメで、ストーリー以外に注目するのは？",
-                options: [
-                    { text: "作画の美しさや音響効果", points: 2 },
-                    { text: "登場人物の心理描写", points: 4 },
-                    { text: "カメラワークや演出の技法", points: 7 },
-                    { text: "「物理演算」の忠実さと絶妙なカメラアングル", points: 11 }
-                ]
-            },
-            {
-                category: "observation",
-                text: "強風が吹いた日、脳裏をよぎる最初の思考は？",
-                options: [
-                    { text: "髪型が崩れるのが心配", points: 1 },
-                    { text: "目にゴミが入らないか注意", points: 3 },
-                    { text: "近くの人が困っていないか確認", points: 6 },
-                    { text: "「物理法則よ、奇跡を起こせ」と祈る", points: 10 }
-                ]
-            },
-            {
-                category: "observation",
-                text: "温泉や銭湯で、どこを見て歩いてる？",
-                options: [
-                    { text: "施設の清潔さと設備", points: 1 },
-                    { text: "景色や内装のデザイン", points: 3 },
-                    { text: "他の人の体型やコンディション", points: 6 },
-                    { text: "……紳士として答えられません", points: 10 }
-                ]
-            },
-            {
-                category: "observation",
-                text: "SNSで他人の投稿を見る時、注目するのは？",
-                options: [
-                    { text: "投稿の内容やメッセージ", points: 2 },
-                    { text: "写真の構図や撮影技術", points: 5 },
-                    { text: "背景に写り込んだ細かい情報", points: 8 },
-                    { text: "写真に写っている人物の「特定要素」", points: 12 }
-                ]
-            },
-            {
-                category: "observation",
-                text: "満員電車で偶然、異性と密着してしまいました。紳士的対応は？",
-                options: [
-                    { text: "すぐに場所を移動する", points: 1 },
-                    { text: "両手を上げて無実をアピール", points: 3 },
-                    { text: "鞄を間に入れてガード", points: 6 },
-                    { text: "表面上はCを装いつつ、触覚神経を極限まで研ぎ澄ます", points: 11 }
-                ]
-            },
-            {
-                category: "observation",
-                text: "過去の恋愛を振り返って、重視していた要素は？",
-                options: [
-                    { text: "性格や価値観の一致", points: 2 },
-                    { text: "話の合いやすさ", points: 4 },
-                    { text: "外見的な好みとのマッチ", points: 7 },
-                    { text: "今思うと「視点」がかなりマニアックだった", points: 12 }
-                ]
-            },
-
-            // カテゴリー2：妄想力・想像力（10問）
-            {
-                category: "imagination",
-                text: "透明人間になって最初の1時間、正直に何をする？",
-                options: [
-                    { text: "図書館で静かに読書を楽しむ", points: 1 },
-                    { text: "会議や授業をこっそり覗き見", points: 4 },
-                    { text: "普段入れない場所の探検", points: 7 },
-                    { text: "……紳士として詳細は控えます", points: 15 }
-                ]
-            },
-            {
-                category: "imagination",
-                text: "「時間を止める能力」を得ました。最初にすることは？",
-                options: [
-                    { text: "遅刻を回避して移動時間を稼ぐ", points: 2 },
-                    { text: "悪人の武器を取り上げて平和を守る", points: 4 },
-                    { text: "寝顔を至近距離で観察する", points: 8 },
-                    { text: "「服装の乱れを直すフリ」をして物理的接触を試みる", points: 14 }
-                ]
-            },
-            {
-                category: "imagination",
-                text: "夢の中でよく見るシチュエーションは？",
-                options: [
-                    { text: "冒険や旅行の夢", points: 2 },
-                    { text: "仕事や日常の延長", points: 3 },
-                    { text: "非現実的なファンタジー", points: 6 },
-                    { text: "朝起きて「なんでこんな夢を...」と後悔する系", points: 13 }
-                ]
-            },
-            {
-                category: "imagination",
-                text: "異世界転生しました。神様からもらうスキルは？",
-                options: [
-                    { text: "世界を救う最強の剣術", points: 2 },
-                    { text: "どんな病も治す治癒魔法", points: 4 },
-                    { text: "お金に困らない錬金術", points: 7 },
-                    { text: "相手を従わせる「催眠」または「魅了」スキル", points: 15 }
-                ]
-            },
-            {
-                category: "imagination",
-                text: "理想のパートナーに求める最重要要素は？",
-                options: [
-                    { text: "性格の相性と価値観", points: 2 },
-                    { text: "知性と会話の楽しさ", points: 4 },
-                    { text: "共通の趣味や興味", points: 6 },
-                    { text: "……正直、見た目の特定要素も重要", points: 11 }
-                ]
-            },
-            {
-                category: "imagination",
-                text: "宝くじで10億円当たったら、最初に何を買う？",
-                options: [
-                    { text: "不動産や堅実な投資", points: 1 },
-                    { text: "世界一周旅行", points: 3 },
-                    { text: "趣味のコレクション拡充", points: 7 },
-                    { text: "……人には言えない夢の実現", points: 12 }
-                ]
-            },
-            {
-                category: "imagination",
-                text: "深夜のネットサーフィン、どこまで行く？",
-                options: [
-                    { text: "ニュースサイトで終了", points: 1 },
-                    { text: "SNSを一通りチェック", points: 3 },
-                    { text: "気になるトピックを深掘り", points: 7 },
-                    { text: "気づいたら朝で履歴を消したくなる場所", points: 13 }
-                ]
-            },
-            {
-                category: "imagination",
-                text: "好きな人と話した後、その会話をどれくらい反芻する？",
-                options: [
-                    { text: "ほとんどしない", points: 1 },
-                    { text: "印象的な部分だけ思い出す", points: 3 },
-                    { text: "会話を頭の中で何度かリピート", points: 7 },
-                    { text: "そこから別ルートの会話までシミュレーション", points: 12 }
-                ]
-            },
-            {
-                category: "imagination",
-                text: "音楽を聴くとき、頭の中で何が始まる？",
-                options: [
-                    { text: "ただBGMとして流れるだけ", points: 1 },
-                    { text: "歌詞やメロディをじっくり味わう", points: 3 },
-                    { text: "その曲に合う情景を勝手に思い浮かべる", points: 7 },
-                    { text: "頭の中でMVがフル尺で制作される", points: 13 }
-                ]
-            },
-            {
-                category: "imagination",
-                text: "「こんなこと考えるの、自分だけかな...」と思う瞬間は？",
-                options: [
-                    { text: "ほとんどない", points: 1 },
-                    { text: "たまにある", points: 3 },
-                    { text: "割とよくある", points: 7 },
-                    { text: "もはや「日課」と言っていい", points: 12 }
-                ]
-            },
-
-            // カテゴリー3：探究心・研究熱心度（9問）
-            {
-                category: "research",
-                text: "気になったジャンルを調べ始めると？",
-                options: [
-                    { text: "概要が分かれば満足", points: 2 },
-                    { text: "基礎知識は一通り押さえる", points: 5 },
-                    { text: "関連情報まで徹底的に調査", points: 9 },
-                    { text: "周りが引くレベルまで極める", points: 13 }
-                ]
-            },
-            {
-                category: "research",
-                text: "ブラウザの「シークレットモード」の主な用途は？",
-                options: [
-                    { text: "誕生日プレゼントの検索（バレないように）", points: 1 },
-                    { text: "ログイン情報を残したくない時", points: 3 },
-                    { text: "くだらない質問を検索する時", points: 6 },
-                    { text: "人類の生命の神秘を探求する学術調査", points: 11 }
-                ]
-            },
-            {
-                category: "research",
-                text: "PCやスマホに、絶対に見せられない「隠しフォルダ」は？",
-                options: [
-                    { text: "全くない", points: 1 },
-                    { text: "昔の恥ずかしいポエムや写真程度", points: 3 },
-                    { text: "整理していない雑多なファイル", points: 6 },
-                    { text: "パスワードで厳重封印された「聖域」がある", points: 12 }
-                ]
-            },
-            {
-                category: "research",
-                text: "検索履歴の傾向として近いのは？",
-                options: [
-                    { text: "仕事・生活に必要なもの中心", points: 2 },
-                    { text: "ニュースや娯楽がバランスよく", points: 4 },
-                    { text: "趣味や興味の「深堀りワード」が多め", points: 8 },
-                    { text: "他人には見せられない、ニッチなワードの宝庫", points: 13 }
-                ]
-            },
-            {
-                category: "research",
-                text: "好きな「属性」や「フェチ」、いくつ挙げられる？",
-                options: [
-                    { text: "特になし", points: 1 },
-                    { text: "「ショートカット」「メガネ」くらい", points: 4 },
-                    { text: "3〜4個はある", points: 7 },
-                    { text: "軽く20個挙げられ、それぞれの良さを1時間語れる", points: 12 }
-                ]
-            },
-            {
-                category: "research",
-                text: "同じ作品やコンテンツを見返す頻度は？",
-                options: [
-                    { text: "1回見れば満足", points: 1 },
-                    { text: "すごく気に入れば数回見る", points: 3 },
-                    { text: "何度も見て新しい発見を楽しむ", points: 7 },
-                    { text: "セリフや構図レベルで記憶しているものがある", points: 12 }
-                ]
-            },
-            {
-                category: "research",
-                text: "「設定集」「裏設定」「スタッフインタビュー」への興味は？",
-                options: [
-                    { text: "ほとんどない", points: 1 },
-                    { text: "作品が相当好きなら見る", points: 3 },
-                    { text: "好きなら積極的に読みたい", points: 7 },
-                    { text: "本編と同じくらい重要", points: 12 }
-                ]
-            },
-            {
-                category: "research",
-                text: "書店で成人向けコーナーの前を通る時の心境は？",
-                options: [
-                    { text: "何も感じない", points: 1 },
-                    { text: "さっさと通り過ぎる", points: 3 },
-                    { text: "表紙くらいはチラッと見る", points: 6 },
-                    { text: "「宝の山」と敬意を払い、最新トレンドをチェック", points: 11 }
-                ]
-            },
-            {
-                category: "research",
-                text: "自分でも「研究しすぎかも」と思ったことは？",
-                options: [
-                    { text: "ない", points: 1 },
-                    { text: "ほぼない", points: 3 },
-                    { text: "たまにある", points: 7 },
-                    { text: "正直、しょっちゅうある", points: 12 }
-                ]
-            },
-
-            // カテゴリー4：紳士度・自制心（8問）
-            {
-                category: "selfcontrol",
-                text: "PCのブラウザ履歴、家族に見せられる？",
-                options: [
-                    { text: "全く問題ない", points: 1 },
-                    { text: "ちょっと恥ずかしいかも", points: 3 },
-                    { text: "事前に整理する時間をください", points: 6 },
-                    { text: "絶対に無理、死んでも見せられない", points: 10 }
-                ]
-            },
-            {
-                category: "selfcontrol",
-                text: "スマホを他人に貸す時の心理状態は？",
-                options: [
-                    { text: "特に何も気にならない", points: 1 },
-                    { text: "通知が来ないか少し心配", points: 3 },
-                    { text: "特定のアプリを見られないか不安", points: 6 },
-                    { text: "心臓バクバク、冷や汗状態", points: 10 }
-                ]
-            },
-            {
-                category: "selfcontrol",
-                text: "「これはさすがにやめとこう」とブレーキを踏んだ経験は？",
-                options: [
-                    { text: "ない（そもそもそんな状況にならない）", points: 1 },
-                    { text: "数回ある", points: 4 },
-                    { text: "何度もある", points: 8 },
-                    { text: "日常的にセルフ検閲している", points: 11 }
-                ]
-            },
-            {
-                category: "selfcontrol",
-                text: "「理性」と「本能」を天秤にかけたときの感覚は？",
-                options: [
-                    { text: "理性が完全勝利", points: 1 },
-                    { text: "基本は理性寄り", points: 3 },
-                    { text: "五分五分", points: 7 },
-                    { text: "理性が必死に本能の手綱を握っている", points: 12 }
-                ]
-            },
-            {
-                category: "selfcontrol",
-                text: "深夜に一人でいる時の行動は？",
-                options: [
-                    { text: "読書や映画鑑賞", points: 2 },
-                    { text: "ゲームやSNS", points: 4 },
-                    { text: "趣味の作業に没頭", points: 6 },
-                    { text: "……朝になって後悔する系", points: 10 }
-                ]
-            },
-            {
-                category: "selfcontrol",
-                text: "あなたが死ぬ時、HDD（ストレージ）の処理は？",
-                options: [
-                    { text: "家族に譲る", points: 1 },
-                    { text: "そのまま廃棄", points: 3 },
-                    { text: "初期化してから捨てる", points: 6 },
-                    { text: "物理的にドリルで破壊し、この世から消滅させる", points: 10 }
-                ]
-            },
-            {
-                category: "selfcontrol",
-                text: "「これ、人に知られたらちょっと照れるな」という趣味は？",
-                options: [
-                    { text: "特にない", points: 1 },
-                    { text: "少しはある", points: 4 },
-                    { text: "かなりある", points: 8 },
-                    { text: "それがアイデンティティになりつつある", points: 12 }
-                ]
-            },
-            {
-                category: "selfcontrol",
-                text: "最後に問います。あなたは「紳士」ですか？",
-                options: [
-                    { text: "いいえ、普通の人です", points: 2 },
-                    { text: "そうありたいと思います", points: 5 },
-                    { text: "時と場合によります", points: 8 },
-                    { text: "はい。ただし「変態」という名の紳士です", points: 12 }
-                ]
-            }
-        ];
-
+        let selectedGender = null;
+        let nickname = '';
         let currentQuestion = 0;
         let answers = [];
         let totalScore = 0;
 
+        // 男性用質問（18問）
+        const maleQuestions = [
+            // カテゴリー1：オナニー事情（6問）
+            {
+                category: "オナニー事情",
+                text: "正直なところ、自家発電の頻度は？",
+                options: [
+                    { text: "週に1回以下（修行僧レベル）", points: 5 },
+                    { text: "週に2〜3回（一般的）", points: 15 },
+                    { text: "ほぼ毎日（日課として）", points: 25 },
+                    { text: "1日複数回、やらないと眠れない", points: 35 }
+                ]
+            },
+            {
+                category: "オナニー事情",
+                text: "「おかず」選びへのこだわりは？",
+                options: [
+                    { text: "想像・妄想だけで十分", points: 5 },
+                    { text: "無料サイトのランキング上位で済ます", points: 15 },
+                    { text: "特定の女優やジャンルを検索しまくる", points: 25 },
+                    { text: "有料作品・VR・同人音声など課金も辞さない", points: 35 }
+                ]
+            },
+            {
+                category: "オナニー事情",
+                text: "オナニーにかける時間は？",
+                options: [
+                    { text: "5分以内にサクッと処理", points: 5 },
+                    { text: "10〜15分くらい", points: 15 },
+                    { text: "30分〜1時間じっくりと", points: 25 },
+                    { text: "1時間以上、こだわり抜く", points: 35 }
+                ]
+            },
+            {
+                category: "オナニー事情",
+                text: "オナニー後の「賢者タイム」の重さは？",
+                options: [
+                    { text: "特に何も感じない", points: 5 },
+                    { text: "少し虚しくなる程度", points: 15 },
+                    { text: "かなり後悔して落ち込む", points: 25 },
+                    { text: "「なんでこんな動画を...」と深い絶望", points: 35 }
+                ]
+            },
+            {
+                category: "オナニー事情",
+                text: "外出先でムラムラしたらどうする？",
+                options: [
+                    { text: "家に帰るまで我慢する", points: 5 },
+                    { text: "気を紛らわせて忘れる", points: 15 },
+                    { text: "トイレで処理を考える", points: 25 },
+                    { text: "即座にトイレへ直行して処理", points: 35 }
+                ]
+            },
+            {
+                category: "オナニー事情",
+                text: "オナニー用の「コレクション」は？",
+                options: [
+                    { text: "特に保存していない", points: 5 },
+                    { text: "お気に入りを少し保存（数GB程度）", points: 15 },
+                    { text: "ジャンル別に整理（数十GB）", points: 25 },
+                    { text: "外付けHDD必須の巨大コレクション", points: 35 }
+                ]
+            },
+
+            // カテゴリー2：性行為への考え方（6問）
+            {
+                category: "性行為への考え方",
+                text: "理想のセックス頻度は？",
+                options: [
+                    { text: "月に1〜2回で十分", points: 5 },
+                    { text: "週に1〜2回", points: 15 },
+                    { text: "週に3〜4回はしたい", points: 25 },
+                    { text: "毎日でも全然OK", points: 35 }
+                ]
+            },
+            {
+                category: "性行為への考え方",
+                text: "セックスで最も重視するのは？",
+                options: [
+                    { text: "相手との愛情表現", points: 5 },
+                    { text: "お互いの気持ち良さ", points: 15 },
+                    { text: "自分の快楽追求", points: 25 },
+                    { text: "とにかく回数とバリエーション", points: 35 }
+                ]
+            },
+            {
+                category: "性行為への考え方",
+                text: "セックス中の妄想頻度は？",
+                options: [
+                    { text: "目の前の相手に集中", points: 5 },
+                    { text: "たまに別のことを考える", points: 15 },
+                    { text: "割とよく妄想している", points: 25 },
+                    { text: "頭の中で常に別シチュエーション展開中", points: 35 }
+                ]
+            },
+            {
+                category: "性行為への考え方",
+                text: "AVで見たプレイを実践したい欲求は？",
+                options: [
+                    { text: "あまり思わない", points: 5 },
+                    { text: "たまに「やってみたいな」と思う", points: 15 },
+                    { text: "よく実践方法を考える", points: 25 },
+                    { text: "常に実践の機会を狙っている", points: 35 }
+                ]
+            },
+            {
+                category: "性行為への考え方",
+                text: "セックスレスになったらどうする？",
+                options: [
+                    { text: "特に問題ない", points: 5 },
+                    { text: "少し寂しい程度", points: 15 },
+                    { text: "かなりストレスが溜まる", points: 25 },
+                    { text: "絶対に耐えられない、何らかの行動を起こす", points: 35 }
+                ]
+            },
+            {
+                category: "性行為への考え方",
+                text: "複数人でのプレイに対する興味は？",
+                options: [
+                    { text: "全く興味がない", points: 5 },
+                    { text: "妄想レベルなら少し", points: 15 },
+                    { text: "機会があれば試してみたい", points: 25 },
+                    { text: "かなり本気で興味がある", points: 35 }
+                ]
+            },
+
+            // カテゴリー3：性癖について（6問）
+            {
+                category: "性癖について",
+                text: "自分の性癖（フェチ）はどの程度？",
+                options: [
+                    { text: "王道が好き、変わったものは苦手", points: 5 },
+                    { text: "少しマニアックなものもある", points: 15 },
+                    { text: "人には言えないジャンルにハマっている", points: 25 },
+                    { text: "法に触れない範囲なら全ジャンル制覇", points: 35 }
+                ]
+            },
+            {
+                category: "性癖について",
+                text: "街中で好みの女性を見かけた時、最初に考えることは？",
+                options: [
+                    { text: "「綺麗な人だな」と純粋に思う", points: 5 },
+                    { text: "「彼氏いるのかな？」などを考える", points: 15 },
+                    { text: "服の下のスタイルを推測してしまう", points: 25 },
+                    { text: "脳内で即座にホテルへチェックイン済み", points: 35 }
+                ]
+            },
+            {
+                category: "性癖について",
+                text: "自分の性癖を人に言える？",
+                options: [
+                    { text: "普通に話せる", points: 5 },
+                    { text: "親しい友人になら", points: 15 },
+                    { text: "かなり恥ずかしくて言いづらい", points: 25 },
+                    { text: "絶対に墓場まで持っていく秘密", points: 35 }
+                ]
+            },
+            {
+                category: "性癖について",
+                text: "アダルトグッズへの興味は？",
+                options: [
+                    { text: "特に興味がない", points: 5 },
+                    { text: "少し興味がある程度", points: 15 },
+                    { text: "いくつか持っている", points: 25 },
+                    { text: "コレクションレベルで所持", points: 35 }
+                ]
+            },
+            {
+                category: "性癖について",
+                text: "性癖の「開拓」に対する姿勢は？",
+                options: [
+                    { text: "今のままで満足している", points: 5 },
+                    { text: "たまに新しいものを試す", points: 15 },
+                    { text: "常に新しいジャンルを探している", points: 25 },
+                    { text: "新たな扉を開け続ける冒険者", points: 35 }
+                ]
+            },
+            {
+                category: "性癖について",
+                text: "最後に正直に。あなたの性欲は？",
+                options: [
+                    { text: "普通だと思う", points: 5 },
+                    { text: "やや強いかもしれない", points: 15 },
+                    { text: "かなり強い自覚がある", points: 25 },
+                    { text: "異常なレベルで強い", points: 35 }
+                ]
+            }
+        ];
+
+        // 女性用質問（18問）
+        const femaleQuestions = [
+            // カテゴリー1：オナニー事情（6問）
+            {
+                category: "セルフプレジャー事情",
+                text: "正直なところ、セルフプレジャーの頻度は？",
+                options: [
+                    { text: "ほとんどしない", points: 5 },
+                    { text: "月に数回、ムラムラした時だけ", points: 15 },
+                    { text: "週に数回はリフレッシュとして", points: 25 },
+                    { text: "ほぼ毎日、寝る前のルーティン", points: 35 }
+                ]
+            },
+            {
+                category: "セルフプレジャー事情",
+                text: "「道具」の使用状況は？",
+                options: [
+                    { text: "手だけで十分", points: 5 },
+                    { text: "たまに身近なものを代用", points: 15 },
+                    { text: "専用のグッズを1〜2個持っている", points: 25 },
+                    { text: "用途別に複数のグッズを使い分け", points: 35 }
+                ]
+            },
+            {
+                category: "セルフプレジャー事情",
+                text: "セルフプレジャーにかける時間は？",
+                options: [
+                    { text: "5〜10分でサクッと", points: 5 },
+                    { text: "15〜30分くらい", points: 15 },
+                    { text: "30分〜1時間じっくりと", points: 25 },
+                    { text: "1時間以上、とことん楽しむ", points: 35 }
+                ]
+            },
+            {
+                category: "セルフプレジャー事情",
+                text: "「おかず」として使うものは？",
+                options: [
+                    { text: "妄想だけで十分", points: 5 },
+                    { text: "小説やマンガ", points: 15 },
+                    { text: "動画や音声コンテンツ", points: 25 },
+                    { text: "色々なコンテンツを組み合わせて楽しむ", points: 35 }
+                ]
+            },
+            {
+                category: "セルフプレジャー事情",
+                text: "セルフプレジャー後の気持ちは？",
+                options: [
+                    { text: "スッキリして満足", points: 5 },
+                    { text: "少し虚しい気持ちになる", points: 15 },
+                    { text: "罪悪感を感じることがある", points: 25 },
+                    { text: "「また見てしまった...」と後悔", points: 35 }
+                ]
+            },
+            {
+                category: "セルフプレジャー事情",
+                text: "外出先でムラムラしたらどうする？",
+                options: [
+                    { text: "家に帰るまで我慢する", points: 5 },
+                    { text: "気を紛らわせて忘れる", points: 15 },
+                    { text: "トイレで軽く処理することを考える", points: 25 },
+                    { text: "実際にトイレで処理することもある", points: 35 }
+                ]
+            },
+
+            // カテゴリー2：性行為への考え方（6問）
+            {
+                category: "性行為への考え方",
+                text: "理想のセックス頻度は？",
+                options: [
+                    { text: "月に1〜2回で十分", points: 5 },
+                    { text: "週に1〜2回", points: 15 },
+                    { text: "週に3〜4回はしたい", points: 25 },
+                    { text: "毎日でも全然歓迎", points: 35 }
+                ]
+            },
+            {
+                category: "性行為への考え方",
+                text: "セックスで最も重視するのは？",
+                options: [
+                    { text: "相手との愛情表現", points: 5 },
+                    { text: "雰囲気と前戯の充実", points: 15 },
+                    { text: "お互いの快楽追求", points: 25 },
+                    { text: "自分の快感を最大化すること", points: 35 }
+                ]
+            },
+            {
+                category: "性行為への考え方",
+                text: "前戯の重要度は？",
+                options: [
+                    { text: "あればいい程度", points: 5 },
+                    { text: "かなり重要だと思う", points: 15 },
+                    { text: "前戯が一番大事", points: 25 },
+                    { text: "前戯だけで満足できる", points: 35 }
+                ]
+            },
+            {
+                category: "性行為への考え方",
+                text: "セックス中の妄想頻度は？",
+                options: [
+                    { text: "相手に集中している", points: 5 },
+                    { text: "たまに妄想することもある", points: 15 },
+                    { text: "よく妄想している", points: 25 },
+                    { text: "妄想しないとイケない", points: 35 }
+                ]
+            },
+            {
+                category: "性行為への考え方",
+                text: "セックスレスになったらどうする？",
+                options: [
+                    { text: "特に問題ない", points: 5 },
+                    { text: "少し寂しい程度", points: 15 },
+                    { text: "かなりストレスが溜まる", points: 25 },
+                    { text: "絶対に耐えられない", points: 35 }
+                ]
+            },
+            {
+                category: "性行為への考え方",
+                text: "複数人でのプレイに対する興味は？",
+                options: [
+                    { text: "全く興味がない", points: 5 },
+                    { text: "妄想レベルなら少し", points: 15 },
+                    { text: "機会があれば試してみたい", points: 25 },
+                    { text: "かなり本気で興味がある", points: 35 }
+                ]
+            },
+
+            // カテゴリー3：性癖について（6問）
+            {
+                category: "性癖について",
+                text: "自分の性癖（フェチ）はどの程度？",
+                options: [
+                    { text: "特に変わったものはない", points: 5 },
+                    { text: "軽いフェチならいくつかある", points: 15 },
+                    { text: "自覚している性癖がハッキリある", points: 25 },
+                    { text: "かなりマニアックな性癖がある", points: 35 }
+                ]
+            },
+            {
+                category: "性癖について",
+                text: "興奮するシチュエーションは？",
+                options: [
+                    { text: "王道の恋愛・愛のあるセックス", points: 5 },
+                    { text: "少し強引な展開や言葉責め", points: 15 },
+                    { text: "複数人や公共の場など非日常系", points: 25 },
+                    { text: "ここでは書けないハードな内容", points: 35 }
+                ]
+            },
+            {
+                category: "性癖について",
+                text: "声や匂いへの反応は？",
+                options: [
+                    { text: "あまり気にならない", points: 5 },
+                    { text: "イケボや良い匂いは好き", points: 15 },
+                    { text: "耳元で囁かれるだけで腰に来る", points: 25 },
+                    { text: "声だけでイける自信がある", points: 35 }
+                ]
+            },
+            {
+                category: "性癖について",
+                text: "自分の性癖を人に言える？",
+                options: [
+                    { text: "普通に話せる", points: 5 },
+                    { text: "親しい友達になら", points: 15 },
+                    { text: "かなり恥ずかしくて言えない", points: 25 },
+                    { text: "絶対に墓場まで持っていく", points: 35 }
+                ]
+            },
+            {
+                category: "性癖について",
+                text: "生理前や排卵期の性欲の変化は？",
+                options: [
+                    { text: "特に変わらない、むしろ下がる", points: 5 },
+                    { text: "少しイライラして人肌恋しくなる", points: 15 },
+                    { text: "明らかにムラムラして抑えるのが大変", points: 25 },
+                    { text: "理性が飛びそうになる、誰でもいいから...", points: 35 }
+                ]
+            },
+            {
+                category: "性癖について",
+                text: "最後に正直に。あなたの性欲は？",
+                options: [
+                    { text: "普通だと思う", points: 5 },
+                    { text: "やや強いかもしれない", points: 15 },
+                    { text: "かなり強い自覚がある", points: 25 },
+                    { text: "異常なレベルで強い", points: 35 }
+                ]
+            }
+        ];
+
+        let questions = [];
+
         function confirmAge(isAdult) {
             if (isAdult) {
                 document.getElementById('ageModal').style.display = 'none';
-                showQuestion();
             } else {
-                alert('申し訳ございません。18歳未満の方はご利用いただけません。');
+                alert('申し訳ございません。20歳未満の方はご利用いただけません。');
                 window.location.href = 'https://www.google.com';
             }
+        }
+
+        function selectGender(gender) {
+            selectedGender = gender;
+            questions = gender === 'male' ? maleQuestions : femaleQuestions;
+            
+            document.querySelectorAll('.gender-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.target.closest('.gender-card').classList.add('selected');
+            
+            document.getElementById('startBtn').disabled = false;
+        }
+
+        function startQuiz() {
+            if (!selectedGender) {
+                alert('性別を選択してください');
+                return;
+            }
+            
+            nickname = document.getElementById('nicknameInput').value.trim();
+            
+            document.getElementById('setup').style.display = 'none';
+            document.getElementById('quiz').style.display = 'block';
+            
+            showQuestion();
         }
 
         function showQuestion() {
@@ -703,6 +902,7 @@
             
             container.innerHTML = `
                 <div class="question-container">
+                    <span class="question-category">${question.category}</span>
                     <div class="question-number">質問 ${currentQuestion + 1} / ${questions.length}</div>
                     <div class="question-text">${question.text}</div>
                     <div class="options">
@@ -757,40 +957,8 @@
                 return;
             }
 
-            // カテゴリー別スコア計算
-            let observationScore = 0;
-            let imaginationScore = 0;
-            let researchScore = 0;
-            let selfcontrolScore = 0;
-
-            questions.forEach((q, index) => {
-                const score = answers[index] || 0;
-                switch(q.category) {
-                    case 'observation':
-                        observationScore += score;
-                        break;
-                    case 'imagination':
-                        imaginationScore += score;
-                        break;
-                    case 'research':
-                        researchScore += score;
-                        break;
-                    case 'selfcontrol':
-                        selfcontrolScore += score;
-                        break;
-                }
-            });
-
-            // 重み付け計算（Model 1の安定したロジックを採用）
-            const rawScore = 
-                observationScore * 0.30 +
-                imaginationScore * 0.35 +
-                researchScore * 0.25 +
-                selfcontrolScore * 0.10;
-
-            // 0-500の範囲に正規化
-            totalScore = Math.round(rawScore * 1.5);
-            totalScore = Math.min(500, Math.max(0, totalScore));
+            // 合計スコア計算
+            totalScore = answers.reduce((sum, score) => sum + (score || 0), 0);
 
             displayResult();
         }
@@ -798,6 +966,10 @@
         function displayResult() {
             document.getElementById('quiz').style.display = 'none';
             document.getElementById('result').style.display = 'block';
+
+            // ニックネーム表示
+            const nicknameText = nickname ? `${nickname}さん` : (selectedGender === 'male' ? '名無しの紳士' : '名無しの淑女');
+            document.getElementById('nicknameDisplay').textContent = nicknameText;
 
             // カウントアップアニメーション
             let currentScore = 0;
@@ -815,34 +987,35 @@
 
             // ランク判定
             let rank, description, shareText;
+            const genderText = selectedGender === 'male' ? '♂️' : '♀️';
             
-            if (totalScore <= 80) {
-                rank = '純朴青年';
-                description = 'あなたは驚くほど健全な心の持ち主です。この清らかさは現代社会では希少価値があります。ただ、人生にもう少しスパイスを加えてみるのも悪くないかもしれません。純粋さを保ちながら、新しい世界に足を踏み入れてみてはいかがでしょうか？';
-                shareText = `俺の紳士力は${totalScore}ptで「${rank}」...健全すぎて逆に心配されるレベルwww #紳士力診断`;
-            } else if (totalScore <= 160) {
-                rank = '隠れ個性派';
-                description = '表面上は普通に見えますが、内に秘めた何かがあります。それがあなたの魅力です。多くの人は気づいていませんが、あなたには独自の視点と感性があります。その個性を大切にしながら、少しずつ表現していくことで、より豊かな人生が開けるでしょう。';
-                shareText = `俺の紳士力は${totalScore}ptで「${rank}」...まあ、そんなもんかな #紳士力診断`;
-            } else if (totalScore <= 280) {
-                rank = '真の紳士候補';
-                description = 'こだわりと社会性のバランスが絶妙です。あなたは大人の男性としての理想的な姿を体現しています。独自の美学を持ちながらも、それを押し付けることなく、周囲と調和を保つことができます。この品格こそが、真の紳士の証です。';
-                shareText = `俺の紳士力は${totalScore}ptで「${rank}」...悪くない結果だな #紳士力診断`;
-            } else if (totalScore <= 400) {
-                rank = 'マニアック紳士';
-                description = '独自の美学を持つ稀有な存在です。もはや芸術の領域に達しています。あなたの探究心と情熱は、時に周囲を驚かせるかもしれませんが、それこそがあなたの個性です。この道を極め続けることで、あなたは唯一無二の存在となるでしょう。';
-                shareText = `俺の紳士力は${totalScore}ptで「${rank}」...認めざるを得ないwww #紳士力診断`;
+            if (totalScore <= 180) {
+                rank = '🌱 清純派・聖人クラス';
+                description = `あなたの性欲レベルは非常に低く、清らかな心の持ち主です。性的なことよりも他のことに意識が向いているようです。これはこれで素晴らしい特性です。無理に性欲を高める必要はありません。自分らしいペースで人生を楽しんでください。`;
+                shareText = `${nicknameText}${genderText}の性欲レベルは${totalScore}で「${rank}」...健全すぎるwww #性欲チェッカー`;
+            } else if (totalScore <= 360) {
+                rank = '🚶 平均的な一般人';
+                description = `あなたの性欲レベルは平均的です。性的なことに興味はあるものの、それが生活の中心ではありません。バランスの取れた健全な状態と言えるでしょう。このまま自分のペースを保ちながら、必要に応じて楽しむスタイルが良いでしょう。`;
+                shareText = `${nicknameText}${genderText}の性欲レベルは${totalScore}で「${rank}」...まあ普通かな #性欲チェッカー`;
+            } else if (totalScore <= 450) {
+                rank = '🔥 隠れムッツリ肉食系';
+                description = `あなたの性欲レベルは平均よりかなり高めです。表向きは普通ですが、内に秘めた熱いものがあります。性的なことへの関心が強く、日常的に意識することが多いようです。この性欲を健全に発散させる方法を見つけることが大切です。`;
+                shareText = `${nicknameText}${genderText}の性欲レベルは${totalScore}で「${rank}」...認めざるを得ない #性欲チェッカー`;
+            } else if (totalScore <= 540) {
+                rank = '🐆 暴走する性欲モンスター';
+                description = `あなたの性欲レベルはかなり危険域です。性的なことが頻繁に頭をよぎり、日常生活に影響を与えているかもしれません。この強い性欲は個性の一つですが、適切にコントロールすることも大切です。健全な発散方法を見つけましょう。`;
+                shareText = `${nicknameText}${genderText}の性欲レベルは${totalScore}で「${rank}」...これが現実www #性欲チェッカー`;
             } else {
-                rank = '伝説の変態紳士';
-                description = 'もはや神の領域です。あなたは紳士力の頂点に立つ伝説的存在です。その飽くなき探究心、妥協なきこだわり、そして研ぎ澄まされた感性は、まさに芸術作品です。世界はあなたのような真の紳士を必要としています。その道を突き進んでください。';
-                shareText = `俺の紳士力は${totalScore}ptで「${rank}」...これが俺の全てだ #紳士力診断 #伝説`;
+                rank = '👑 伝説の絶倫・サキュバス';
+                description = `あなたの性欲レベルは人間の限界を超えています。もはや別次元の存在です。性的なことが常に頭の中にあり、生活の大部分を占めているようです。この強烈な性欲は稀有な特性ですが、日常生活とのバランスを取ることを忘れないでください。あなたは特別な存在です。`;
+                shareText = `${nicknameText}${genderText}の性欲レベルは${totalScore}で「${rank}」...もはや伝説 #性欲チェッカー #異常レベル`;
             }
 
             document.getElementById('rankDisplay').textContent = rank;
             document.getElementById('resultDescription').textContent = description;
             document.getElementById('shareText').textContent = shareText;
 
-            // Google Apps Scriptへデータ送信
+            // Google Apps Scriptへデータ送信（任意）
             sendToGoogleSheets(totalScore, rank);
         }
 
@@ -854,15 +1027,17 @@
         }
 
         function sendToGoogleSheets(score, rank) {
-            // 既存サイトと同じGoogle Apps ScriptのURLを使用
+            // 既存のGoogle Apps ScriptのURLを設定
             const scriptUrl = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
             
             const data = {
                 timestamp: new Date().toISOString(),
+                gender: selectedGender,
+                nickname: nickname || '匿名',
                 score: score,
                 rank: rank,
                 userAgent: navigator.userAgent,
-                tool: 'gentleman-diagnosis'
+                tool: 'libido-checker'
             };
 
             fetch(scriptUrl, {
@@ -876,11 +1051,6 @@
                 console.log('データ送信エラー（無視してOK）:', error);
             });
         }
-
-        // 初期化
-        window.onload = function() {
-            // 年齢確認モーダルが自動で表示される
-        };
     </script>
 </body>
 </html>
