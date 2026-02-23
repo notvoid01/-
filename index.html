@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>紳士力診断 〜Hidden Gentleman Protocol〜</title>
+    <meta name="description" content="あなたの隠れた紳士力を科学的に測定。完全フィクションのジョーク診断ツール。">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: linear-gradient(135deg, #0A0E0D 0%, #1a1f1e 100%);
+            color: #E8E8E8;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            border-bottom: 2px solid #D4AF37;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #D4AF37;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: #2C5F2D;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+
+        .warning {
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid #D4AF37;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-size: 0.95em;
+        }
+
+        .warning h3 {
+            color: #D4AF37;
+            margin-bottom: 10px;
+        }
+
+        .question-container {
+            background: rgba(44, 95, 45, 0.1);
+            border: 1px solid #2C5F2D;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .question-number {
+            color: #D4AF37;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            color: #E8E8E8;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            background: rgba(10, 14, 13, 0.5);
+            border: 2px solid #2C5F2D;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .option:hover {
+            background: rgba(44, 95, 45, 0.3);
+            border-color: #D4AF37;
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            background: rgba(44, 95, 45, 0.5);
+            border-color: #D4AF37;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #2C5F2D 0%, #1a3d1b 100%);
+            color: #D4AF37;
+            border: 2px solid #D4AF37;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 30px auto;
+            font-family: 'Georgia', serif;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #1a3d1b 0%, #2C5F2D 100%);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            transform: scale(1.05);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        #result {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .score-display {
+            font-size: 4em;
+            color: #D4AF37;
+            font-weight: bold;
+            margin: 20px 0;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+        }
+
+        .rank-display {
+            font-size: 2em;
+            color: #2C5F2D;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid #D4AF37;
+            border-radius: 10px;
+        }
+
+        .result-description {
+            font-size: 1.2em;
+            line-height: 1.8;
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(44, 95, 45, 0.1);
+            border-radius: 10px;
+        }
+
+        .share-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(10, 14, 13, 0.5);
+            border-radius: 10px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #0A0E0D 0%, #1a1f1e 100%);
+            border: 3px solid #D4AF37;
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .modal h2 {
+            color: #D4AF37;
+            margin-bottom: 20px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .score-display {
+                font-size: 3em;
+            }
+            
+            .rank-display {
+                font-size: 1.5em;
+            }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: rgba(10, 14, 13, 0.5);
+            border: 2px solid #2C5F2D;
+            border-radius: 15px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2C5F2D 0%, #D4AF37 100%);
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0A0E0D;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- 年齢確認モーダル -->
+    <div id="ageModal" class="modal" style="display: flex;">
+        <div class="modal-content">
+            <h2>🎩 年齢確認 🎩</h2>
+            <p style="margin: 20px 0; font-size: 1.1em;">
+                この診断は18歳以上の方を対象とした<br>
+                完全フィクションのジョークコンテンツです。
+            </p>
+            <p style="color: #D4AF37; margin: 15px 0;">
+                あなたは18歳以上ですか？
+            </p>
+            <div class="modal-buttons">
+                <button class="btn" onclick="confirmAge(true)">はい（18歳以上）</button>
+                <button class="btn" onclick="confirmAge(false)">いいえ</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>🎩 紳士力診断 🎩</h1>
+            <p class="subtitle">〜 Hidden Gentleman Protocol 〜</p>
+            <p>あなたの隠れた紳士力を科学的に測定します</p>
+        </header>
+
+        <div class="warning">
+            <h3>⚠️ 重要な注意事項</h3>
+            <p>
+                ・この診断は完全なフィクション・ジョークコンテンツです<br>
+                ・科学的根拠は一切ありません<br>
+                ・エンターテイメント目的でお楽しみください<br>
+                ・結果を真に受けないでください<br>
+                ・18歳未満の方はご利用いただけません
+            </p>
+        </div>
+
+        <div id="quiz">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar" style="width: 0%;">
+                    <span id="progressText">0/36</span>
+                </div>
+            </div>
+            <div id="questionContainer"></div>
+            <button class="btn" id="nextBtn" onclick="nextQuestion()" disabled>次へ</button>
+            <button class="btn" id="submitBtn" onclick="calculateResult()" style="display: none;">診断結果を見る</button>
+        </div>
+
+        <div id="result">
+            <h2 style="color: #D4AF37; font-size: 2.5em; margin-bottom: 20px;">診断結果</h2>
+            <div class="score-display" id="scoreDisplay">0</div>
+            <p style="font-size: 1.3em; color: #2C5F2D;">紳士力ポイント</p>
+            <div class="rank-display" id="rankDisplay"></div>
+            <div class="result-description" id="resultDescription"></div>
+            
+            <div class="share-section">
+                <h3 style="color: #D4AF37; margin-bottom: 15px;">結果をシェア</h3>
+                <p id="shareText" style="margin-bottom: 15px;"></p>
+                <button class="btn" onclick="shareResult()">Twitterでシェア</button>
+                <button class="btn" onclick="location.reload()">もう一度診断する</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 質問データ（上記で設計した36問を配列形式で定義）
+        const questions = [
+            // カテゴリー1：観察眼・こだわり度
+            {
+                category: "observation",
+                text: "街中で異性を見かけたとき、最初に目が行きがちなところは？",
+                options: [
+                    { text: "全体の雰囲気・オーラ", points: 2 },
+                    { text: "ファッション・髪型全体", points: 4 },
+                    { text: "仕草・歩き方の細かい癖", points: 7 },
+                    { text: "……ここでは詳しく言えない「特定部位」", points: 12 }
+                ]
+            },
+            {
+                category: "observation",
+                text: "階段やエスカレーターで前に人がいる時、視線の管理は？",
+                options: [
+                    { text: "足元を見て安全確認", points: 1 },
+                    { text: "スマホを見て時間を潰す", points: 3 },
+                    { text: "景色や広告を眺める", points: 6 },
+                    { text: "「絶対領域」の出現を動体視力で捉える", points: 12 }
+                ]
+            },
+            {
+                category: "observation",
+                text: "YouTubeのおすすめ欄に出てくる動画の傾向は？",
+                options: [
+                    { text: "ニュースや教育系コンテンツ", points: 2 },
+                    { text: "エンタメ・バラエティ系", points: 4 },
+                    { text: "特定のマニアックなジャンル", points: 8 },
+                    { text: "サムネイルで「察してください」系", points: 13 }
+                ]
+            },
+            {
+                category: "observation",
+                text: "映画やアニメで、ストーリー以外に注目するのは？",
+                options: [
+                    { text: "作画の美しさや音響効果", points: 2 },
+                    { text: "登場人物の心理描写", points: 4 },
+                    { text: "カメラワークや演出の技法", points: 7 },
+                    { text: "「物理演算」の忠実さと絶妙なカメラアングル", points: 11 }
+                ]
+            },
+            {
+                category: "observation",
+                text: "強風が吹いた日、脳裏をよぎる最初の思考は？",
+                options: [
+                    { text: "髪型が崩れるのが心配", points: 1 },
+                    { text: "目にゴミが入らないか注意", points: 3 },
+                    { text: "近くの人が困っていないか確認", points: 6 },
+                    { text: "「物理法則よ、奇跡を起こせ」と祈る", points: 10 }
+                ]
+            },
+            {
+                category: "observation",
+                text: "温泉や銭湯で、どこを見て歩いてる？",
+                options: [
+                    { text: "施設の清潔さと設備", points: 1 },
+                    { text: "景色や内装のデザイン", points: 3 },
+                    { text: "他の人の体型やコンディション", points: 6 },
+                    { text: "……紳士として答えられません", points: 10 }
+                ]
+            },
+            {
+                category: "observation",
+                text: "SNSで他人の投稿を見る時、注目するのは？",
+                options: [
+                    { text: "投稿の内容やメッセージ", points: 2 },
+                    { text: "写真の構図や撮影技術", points: 5 },
+                    { text: "背景に写り込んだ細かい情報", points: 8 },
+                    { text: "写真に写っている人物の「特定要素」", points: 12 }
+                ]
+            },
+            {
+                category: "observation",
+                text: "満員電車で偶然、異性と密着してしまいました。紳士的対応は？",
+                options: [
+                    { text: "すぐに場所を移動する", points: 1 },
+                    { text: "両手を上げて無実をアピール", points: 3 },
+                    { text: "鞄を間に入れてガード", points: 6 },
+                    { text: "表面上はCを装いつつ、触覚神経を極限まで研ぎ澄ます", points: 11 }
+                ]
+            },
+            {
+                category: "observation",
+                text: "過去の恋愛を振り返って、重視していた要素は？",
+                options: [
+                    { text: "性格や価値観の一致", points: 2 },
+                    { text: "話の合いやすさ", points: 4 },
+                    { text: "外見的な好みとのマッチ", points: 7 },
+                    { text: "今思うと「視点」がかなりマニアックだった", points: 12 }
+                ]
+            },
+
+            // カテゴリー2：妄想力・想像力（10問）
+            {
+                category: "imagination",
+                text: "透明人間になって最初の1時間、正直に何をする？",
+                options: [
+                    { text: "図書館で静かに読書を楽しむ", points: 1 },
+                    { text: "会議や授業をこっそり覗き見", points: 4 },
+                    { text: "普段入れない場所の探検", points: 7 },
+                    { text: "……紳士として詳細は控えます", points: 15 }
+                ]
+            },
+            {
+                category: "imagination",
+                text: "「時間を止める能力」を得ました。最初にすることは？",
+                options: [
+                    { text: "遅刻を回避して移動時間を稼ぐ", points: 2 },
+                    { text: "悪人の武器を取り上げて平和を守る", points: 4 },
+                    { text: "寝顔を至近距離で観察する", points: 8 },
+                    { text: "「服装の乱れを直すフリ」をして物理的接触を試みる", points: 14 }
+                ]
+            },
+            {
+                category: "imagination",
+                text: "夢の中でよく見るシチュエーションは？",
+                options: [
+                    { text: "冒険や旅行の夢", points: 2 },
+                    { text: "仕事や日常の延長", points: 3 },
+                    { text: "非現実的なファンタジー", points: 6 },
+                    { text: "朝起きて「なんでこんな夢を...」と後悔する系", points: 13 }
+                ]
+            },
+            {
+                category: "imagination",
+                text: "異世界転生しました。神様からもらうスキルは？",
+                options: [
+                    { text: "世界を救う最強の剣術", points: 2 },
+                    { text: "どんな病も治す治癒魔法", points: 4 },
+                    { text: "お金に困らない錬金術", points: 7 },
+                    { text: "相手を従わせる「催眠」または「魅了」スキル", points: 15 }
+                ]
+            },
+            {
+                category: "imagination",
+                text: "理想のパートナーに求める最重要要素は？",
+                options: [
+                    { text: "性格の相性と価値観", points: 2 },
+                    { text: "知性と会話の楽しさ", points: 4 },
+                    { text: "共通の趣味や興味", points: 6 },
+                    { text: "……正直、見た目の特定要素も重要", points: 11 }
+                ]
+            },
+            {
+                category: "imagination",
+                text: "宝くじで10億円当たったら、最初に何を買う？",
+                options: [
+                    { text: "不動産や堅実な投資", points: 1 },
+                    { text: "世界一周旅行", points: 3 },
+                    { text: "趣味のコレクション拡充", points: 7 },
+                    { text: "……人には言えない夢の実現", points: 12 }
+                ]
+            },
+            {
+                category: "imagination",
+                text: "深夜のネットサーフィン、どこまで行く？",
+                options: [
+                    { text: "ニュースサイトで終了", points: 1 },
+                    { text: "SNSを一通りチェック", points: 3 },
+                    { text: "気になるトピックを深掘り", points: 7 },
+                    { text: "気づいたら朝で履歴を消したくなる場所", points: 13 }
+                ]
+            },
+            {
+                category: "imagination",
+                text: "好きな人と話した後、その会話をどれくらい反芻する？",
+                options: [
+                    { text: "ほとんどしない", points: 1 },
+                    { text: "印象的な部分だけ思い出す", points: 3 },
+                    { text: "会話を頭の中で何度かリピート", points: 7 },
+                    { text: "そこから別ルートの会話までシミュレーション", points: 12 }
+                ]
+            },
+            {
+                category: "imagination",
+                text: "音楽を聴くとき、頭の中で何が始まる？",
+                options: [
+                    { text: "ただBGMとして流れるだけ", points: 1 },
+                    { text: "歌詞やメロディをじっくり味わう", points: 3 },
+                    { text: "その曲に合う情景を勝手に思い浮かべる", points: 7 },
+                    { text: "頭の中でMVがフル尺で制作される", points: 13 }
+                ]
+            },
+            {
+                category: "imagination",
+                text: "「こんなこと考えるの、自分だけかな...」と思う瞬間は？",
+                options: [
+                    { text: "ほとんどない", points: 1 },
+                    { text: "たまにある", points: 3 },
+                    { text: "割とよくある", points: 7 },
+                    { text: "もはや「日課」と言っていい", points: 12 }
+                ]
+            },
+
+            // カテゴリー3：探究心・研究熱心度（9問）
+            {
+                category: "research",
+                text: "気になったジャンルを調べ始めると？",
+                options: [
+                    { text: "概要が分かれば満足", points: 2 },
+                    { text: "基礎知識は一通り押さえる", points: 5 },
+                    { text: "関連情報まで徹底的に調査", points: 9 },
+                    { text: "周りが引くレベルまで極める", points: 13 }
+                ]
+            },
+            {
+                category: "research",
+                text: "ブラウザの「シークレットモード」の主な用途は？",
+                options: [
+                    { text: "誕生日プレゼントの検索（バレないように）", points: 1 },
+                    { text: "ログイン情報を残したくない時", points: 3 },
+                    { text: "くだらない質問を検索する時", points: 6 },
+                    { text: "人類の生命の神秘を探求する学術調査", points: 11 }
+                ]
+            },
+            {
+                category: "research",
+                text: "PCやスマホに、絶対に見せられない「隠しフォルダ」は？",
+                options: [
+                    { text: "全くない", points: 1 },
+                    { text: "昔の恥ずかしいポエムや写真程度", points: 3 },
+                    { text: "整理していない雑多なファイル", points: 6 },
+                    { text: "パスワードで厳重封印された「聖域」がある", points: 12 }
+                ]
+            },
+            {
+                category: "research",
+                text: "検索履歴の傾向として近いのは？",
+                options: [
+                    { text: "仕事・生活に必要なもの中心", points: 2 },
+                    { text: "ニュースや娯楽がバランスよく", points: 4 },
+                    { text: "趣味や興味の「深堀りワード」が多め", points: 8 },
+                    { text: "他人には見せられない、ニッチなワードの宝庫", points: 13 }
+                ]
+            },
+            {
+                category: "research",
+                text: "好きな「属性」や「フェチ」、いくつ挙げられる？",
+                options: [
+                    { text: "特になし", points: 1 },
+                    { text: "「ショートカット」「メガネ」くらい", points: 4 },
+                    { text: "3〜4個はある", points: 7 },
+                    { text: "軽く20個挙げられ、それぞれの良さを1時間語れる", points: 12 }
+                ]
+            },
+            {
+                category: "research",
+                text: "同じ作品やコンテンツを見返す頻度は？",
+                options: [
+                    { text: "1回見れば満足", points: 1 },
+                    { text: "すごく気に入れば数回見る", points: 3 },
+                    { text: "何度も見て新しい発見を楽しむ", points: 7 },
+                    { text: "セリフや構図レベルで記憶しているものがある", points: 12 }
+                ]
+            },
+            {
+                category: "research",
+                text: "「設定集」「裏設定」「スタッフインタビュー」への興味は？",
+                options: [
+                    { text: "ほとんどない", points: 1 },
+                    { text: "作品が相当好きなら見る", points: 3 },
+                    { text: "好きなら積極的に読みたい", points: 7 },
+                    { text: "本編と同じくらい重要", points: 12 }
+                ]
+            },
+            {
+                category: "research",
+                text: "書店で成人向けコーナーの前を通る時の心境は？",
+                options: [
+                    { text: "何も感じない", points: 1 },
+                    { text: "さっさと通り過ぎる", points: 3 },
+                    { text: "表紙くらいはチラッと見る", points: 6 },
+                    { text: "「宝の山」と敬意を払い、最新トレンドをチェック", points: 11 }
+                ]
+            },
+            {
+                category: "research",
+                text: "自分でも「研究しすぎかも」と思ったことは？",
+                options: [
+                    { text: "ない", points: 1 },
+                    { text: "ほぼない", points: 3 },
+                    { text: "たまにある", points: 7 },
+                    { text: "正直、しょっちゅうある", points: 12 }
+                ]
+            },
+
+            // カテゴリー4：紳士度・自制心（8問）
+            {
+                category: "selfcontrol",
+                text: "PCのブラウザ履歴、家族に見せられる？",
+                options: [
+                    { text: "全く問題ない", points: 1 },
+                    { text: "ちょっと恥ずかしいかも", points: 3 },
+                    { text: "事前に整理する時間をください", points: 6 },
+                    { text: "絶対に無理、死んでも見せられない", points: 10 }
+                ]
+            },
+            {
+                category: "selfcontrol",
+                text: "スマホを他人に貸す時の心理状態は？",
+                options: [
+                    { text: "特に何も気にならない", points: 1 },
+                    { text: "通知が来ないか少し心配", points: 3 },
+                    { text: "特定のアプリを見られないか不安", points: 6 },
+                    { text: "心臓バクバク、冷や汗状態", points: 10 }
+                ]
+            },
+            {
+                category: "selfcontrol",
+                text: "「これはさすがにやめとこう」とブレーキを踏んだ経験は？",
+                options: [
+                    { text: "ない（そもそもそんな状況にならない）", points: 1 },
+                    { text: "数回ある", points: 4 },
+                    { text: "何度もある", points: 8 },
+                    { text: "日常的にセルフ検閲している", points: 11 }
+                ]
+            },
+            {
+                category: "selfcontrol",
+                text: "「理性」と「本能」を天秤にかけたときの感覚は？",
+                options: [
+                    { text: "理性が完全勝利", points: 1 },
+                    { text: "基本は理性寄り", points: 3 },
+                    { text: "五分五分", points: 7 },
+                    { text: "理性が必死に本能の手綱を握っている", points: 12 }
+                ]
+            },
+            {
+                category: "selfcontrol",
+                text: "深夜に一人でいる時の行動は？",
+                options: [
+                    { text: "読書や映画鑑賞", points: 2 },
+                    { text: "ゲームやSNS", points: 4 },
+                    { text: "趣味の作業に没頭", points: 6 },
+                    { text: "……朝になって後悔する系", points: 10 }
+                ]
+            },
+            {
+                category: "selfcontrol",
+                text: "あなたが死ぬ時、HDD（ストレージ）の処理は？",
+                options: [
+                    { text: "家族に譲る", points: 1 },
+                    { text: "そのまま廃棄", points: 3 },
+                    { text: "初期化してから捨てる", points: 6 },
+                    { text: "物理的にドリルで破壊し、この世から消滅させる", points: 10 }
+                ]
+            },
+            {
+                category: "selfcontrol",
+                text: "「これ、人に知られたらちょっと照れるな」という趣味は？",
+                options: [
+                    { text: "特にない", points: 1 },
+                    { text: "少しはある", points: 4 },
+                    { text: "かなりある", points: 8 },
+                    { text: "それがアイデンティティになりつつある", points: 12 }
+                ]
+            },
+            {
+                category: "selfcontrol",
+                text: "最後に問います。あなたは「紳士」ですか？",
+                options: [
+                    { text: "いいえ、普通の人です", points: 2 },
+                    { text: "そうありたいと思います", points: 5 },
+                    { text: "時と場合によります", points: 8 },
+                    { text: "はい。ただし「変態」という名の紳士です", points: 12 }
+                ]
+            }
+        ];
+
+        let currentQuestion = 0;
+        let answers = [];
+        let totalScore = 0;
+
+        function confirmAge(isAdult) {
+            if (isAdult) {
+                document.getElementById('ageModal').style.display = 'none';
+                showQuestion();
+            } else {
+                alert('申し訳ございません。18歳未満の方はご利用いただけません。');
+                window.location.href = 'https://www.google.com';
+            }
+        }
+
+        function showQuestion() {
+            if (currentQuestion >= questions.length) {
+                return;
+            }
+
+            const question = questions[currentQuestion];
+            const container = document.getElementById('questionContainer');
+            
+            container.innerHTML = `
+                <div class="question-container">
+                    <div class="question-number">質問 ${currentQuestion + 1} / ${questions.length}</div>
+                    <div class="question-text">${question.text}</div>
+                    <div class="options">
+                        ${question.options.map((option, index) => `
+                            <div class="option" onclick="selectOption(${index})">
+                                ${option.text}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+
+            updateProgress();
+            document.getElementById('nextBtn').disabled = true;
+            
+            if (currentQuestion === questions.length - 1) {
+                document.getElementById('nextBtn').style.display = 'none';
+                document.getElementById('submitBtn').style.display = 'block';
+            }
+        }
+
+        function selectOption(optionIndex) {
+            const options = document.querySelectorAll('.option');
+            options.forEach(opt => opt.classList.remove('selected'));
+            options[optionIndex].classList.add('selected');
+            
+            answers[currentQuestion] = questions[currentQuestion].options[optionIndex].points;
+            
+            document.getElementById('nextBtn').disabled = false;
+            document.getElementById('submitBtn').disabled = false;
+        }
+
+        function nextQuestion() {
+            if (answers[currentQuestion] === undefined) {
+                alert('選択肢を選んでください');
+                return;
+            }
+            
+            currentQuestion++;
+            showQuestion();
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('progressText').textContent = `${currentQuestion + 1}/${questions.length}`;
+        }
+
+        function calculateResult() {
+            if (answers[currentQuestion] === undefined) {
+                alert('選択肢を選んでください');
+                return;
+            }
+
+            // カテゴリー別スコア計算
+            let observationScore = 0;
+            let imaginationScore = 0;
+            let researchScore = 0;
+            let selfcontrolScore = 0;
+
+            questions.forEach((q, index) => {
+                const score = answers[index] || 0;
+                switch(q.category) {
+                    case 'observation':
+                        observationScore += score;
+                        break;
+                    case 'imagination':
+                        imaginationScore += score;
+                        break;
+                    case 'research':
+                        researchScore += score;
+                        break;
+                    case 'selfcontrol':
+                        selfcontrolScore += score;
+                        break;
+                }
+            });
+
+            // 重み付け計算（Model 1の安定したロジックを採用）
+            const rawScore = 
+                observationScore * 0.30 +
+                imaginationScore * 0.35 +
+                researchScore * 0.25 +
+                selfcontrolScore * 0.10;
+
+            // 0-500の範囲に正規化
+            totalScore = Math.round(rawScore * 1.5);
+            totalScore = Math.min(500, Math.max(0, totalScore));
+
+            displayResult();
+        }
+
+        function displayResult() {
+            document.getElementById('quiz').style.display = 'none';
+            document.getElementById('result').style.display = 'block';
+
+            // カウントアップアニメーション
+            let currentScore = 0;
+            const increment = Math.ceil(totalScore / 50);
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            
+            const counter = setInterval(() => {
+                currentScore += increment;
+                if (currentScore >= totalScore) {
+                    currentScore = totalScore;
+                    clearInterval(counter);
+                }
+                scoreDisplay.textContent = currentScore;
+            }, 30);
+
+            // ランク判定
+            let rank, description, shareText;
+            
+            if (totalScore <= 80) {
+                rank = '純朴青年';
+                description = 'あなたは驚くほど健全な心の持ち主です。この清らかさは現代社会では希少価値があります。ただ、人生にもう少しスパイスを加えてみるのも悪くないかもしれません。純粋さを保ちながら、新しい世界に足を踏み入れてみてはいかがでしょうか？';
+                shareText = `俺の紳士力は${totalScore}ptで「${rank}」...健全すぎて逆に心配されるレベルwww #紳士力診断`;
+            } else if (totalScore <= 160) {
+                rank = '隠れ個性派';
+                description = '表面上は普通に見えますが、内に秘めた何かがあります。それがあなたの魅力です。多くの人は気づいていませんが、あなたには独自の視点と感性があります。その個性を大切にしながら、少しずつ表現していくことで、より豊かな人生が開けるでしょう。';
+                shareText = `俺の紳士力は${totalScore}ptで「${rank}」...まあ、そんなもんかな #紳士力診断`;
+            } else if (totalScore <= 280) {
+                rank = '真の紳士候補';
+                description = 'こだわりと社会性のバランスが絶妙です。あなたは大人の男性としての理想的な姿を体現しています。独自の美学を持ちながらも、それを押し付けることなく、周囲と調和を保つことができます。この品格こそが、真の紳士の証です。';
+                shareText = `俺の紳士力は${totalScore}ptで「${rank}」...悪くない結果だな #紳士力診断`;
+            } else if (totalScore <= 400) {
+                rank = 'マニアック紳士';
+                description = '独自の美学を持つ稀有な存在です。もはや芸術の領域に達しています。あなたの探究心と情熱は、時に周囲を驚かせるかもしれませんが、それこそがあなたの個性です。この道を極め続けることで、あなたは唯一無二の存在となるでしょう。';
+                shareText = `俺の紳士力は${totalScore}ptで「${rank}」...認めざるを得ないwww #紳士力診断`;
+            } else {
+                rank = '伝説の変態紳士';
+                description = 'もはや神の領域です。あなたは紳士力の頂点に立つ伝説的存在です。その飽くなき探究心、妥協なきこだわり、そして研ぎ澄まされた感性は、まさに芸術作品です。世界はあなたのような真の紳士を必要としています。その道を突き進んでください。';
+                shareText = `俺の紳士力は${totalScore}ptで「${rank}」...これが俺の全てだ #紳士力診断 #伝説`;
+            }
+
+            document.getElementById('rankDisplay').textContent = rank;
+            document.getElementById('resultDescription').textContent = description;
+            document.getElementById('shareText').textContent = shareText;
+
+            // Google Apps Scriptへデータ送信
+            sendToGoogleSheets(totalScore, rank);
+        }
+
+        function shareResult() {
+            const shareText = document.getElementById('shareText').textContent;
+            const url = window.location.href;
+            const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(url)}`;
+            window.open(twitterUrl, '_blank');
+        }
+
+        function sendToGoogleSheets(score, rank) {
+            // 既存サイトと同じGoogle Apps ScriptのURLを使用
+            const scriptUrl = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
+            
+            const data = {
+                timestamp: new Date().toISOString(),
+                score: score,
+                rank: rank,
+                userAgent: navigator.userAgent,
+                tool: 'gentleman-diagnosis'
+            };
+
+            fetch(scriptUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            }).catch(error => {
+                console.log('データ送信エラー（無視してOK）:', error);
+            });
+        }
+
+        // 初期化
+        window.onload = function() {
+            // 年齢確認モーダルが自動で表示される
+        };
+    </script>
+</body>
+</html>
