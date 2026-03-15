@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎀 AI Voice Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background: linear-gradient(135deg, #ffeef8 0%, #ffe4f3 25%, #e8d5f7 50%, #dfe7ff 75%, #fff0f6 100%);
+            min-height: 100vh;
+            padding: 20px;
+            animation: gradientShift 15s ease infinite;
+            background-size: 400% 400%;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* ヘッダー */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 25px;
+            box-shadow: 0 8px 32px rgba(255, 105, 180, 0.2);
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header-title h1 {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #ff69b4, #da70d6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 5px;
+        }
+
+        .header-title p {
+            color: #888;
+            font-size: 0.95em;
+        }
+
+        .api-key-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .api-key-section label {
+            font-size: 0.85em;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .api-key-input {
+            padding: 12px 18px;
+            border: 2px solid #ffc0e0;
+            border-radius: 12px;
+            font-size: 0.9em;
+            width: 280px;
+            transition: all 0.3s;
+            font-family: 'Courier New', monospace;
+        }
+
+        .api-key-input:focus {
+            outline: none;
+            border-color: #ff69b4;
+            box-shadow: 0 0 0 3px rgba(255, 105, 180, 0.1);
+        }
+
+        .test-btn {
+            margin-top: 8px;
+            padding: 6px 12px;
+            background: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 0.75em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .test-btn:hover {
+            background: #e0e0e0;
+        }
+
+        /* タブ */
+        .tabs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 18px 30px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 3px solid transparent;
+            border-radius: 20px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #666;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .tab-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 105, 180, 0.25);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #ff69b4, #da70d6);
+            color: white;
+            border-color: white;
+            box-shadow: 0 6px 25px rgba(255, 105, 180, 0.4);
+        }
+
+        /* メインコンテンツカード */
+        .mode-content {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 35px;
+            border-radius: 25px;
+            box-shadow: 0 8px 32px rgba(255, 105, 180, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .mode-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* フォーム要素 */
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #555;
+            font-size: 1em;
+        }
+
+        .form-group textarea,
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ffc0e0;
+            border-radius: 15px;
+            font-size: 1em;
+            font-family: 'Noto Sans JP', sans-serif;
+            transition: all 0.3s;
+            resize: vertical;
+        }
+
+        .form-group textarea:focus,
+        .form-group input[type="text"]:focus {
+            outline: none;
+            border-color: #ff69b4;
+            box-shadow: 0 0 0 3px rgba(255, 105, 180, 0.1);
+        }
+
+        textarea {
+            min-height: 100px;
+        }
+
+        /* 感情ボタン */
+        .emotion-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .emotion-btn {
+            padding: 12px 20px;
+            background: white;
+            border: 2px solid #ffc0e0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1em;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .emotion-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.2);
+        }
+
+        .emotion-btn.active {
+            background: linear-gradient(135deg, #ff69b4, #da70d6);
+            color: white;
+            border-color: #ff69b4;
+        }
+
+        /* ファイルアップロード */
+        .upload-area {
+            border: 3px dashed #ffc0e0;
+            border-radius: 20px;
+            padding: 50px 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(255, 240, 250, 0.5);
+        }
+
+        .upload-area:hover {
+            border-color: #ff69b4;
+            background: rgba(255, 230, 245, 0.7);
+        }
+
+        .upload-area.dragover {
+            border-color: #ff69b4;
+            background: rgba(255, 105, 180, 0.1);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            font-size: 1.1em;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .upload-hint {
+            font-size: 0.9em;
+            color: #999;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-preview {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255, 240, 250, 0.7);
+            border-radius: 15px;
+        }
+
+        .file-preview.active {
+            display: block;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .file-name {
+            font-weight: 600;
+            color: #555;
+        }
+
+        /* 生成ボタン */
+        .generate-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #ff69b4, #da70d6);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.2em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 6px 25px rgba(255, 105, 180, 0.4);
+            margin-top: 25px;
+        }
+
+        .generate-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(255, 105, 180, 0.5);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .generate-btn.loading {
+            position: relative;
+        }
+
+        .generate-btn.loading::after {
+            content: '';
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: translateY(-50%) rotate(360deg); }
+        }
+
+        /* 音声プレイヤー */
+        .audio-player {
+            display: none;
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, rgba(255, 240, 250, 0.9), rgba(230, 220, 255, 0.9));
+            border-radius: 20px;
+            box-shadow: 0 6px 20px rgba(255, 105, 180, 0.2);
+        }
+
+        .audio-player.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .player-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .play-btn {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #ff69b4, #da70d6);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3);
+        }
+
+        .play-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(255, 105, 180, 0.4);
+        }
+
+        .waveform {
+            flex: 1;
+            height: 60px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            padding: 10px;
+        }
+
+        .wave-bar {
+            width: 4px;
+            background: linear-gradient(to top, #ff69b4, #da70d6);
+            border-radius: 2px;
+            animation: wave 1s ease-in-out infinite;
+        }
+
+        .wave-bar:nth-child(2n) { animation-delay: 0.1s; }
+        .wave-bar:nth-child(3n) { animation-delay: 0.2s; }
+
+        @keyframes wave {
+            0%, 100% { height: 20px; }
+            50% { height: 45px; }
+        }
+
+        .download-btn {
+            padding: 15px 30px;
+            background: white;
+            color: #ff69b4;
+            border: 2px solid #ff69b4;
+            border-radius: 12px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .download-btn:hover {
+            background: #ff69b4;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3);
+        }
+
+        /* 履歴 */
+        .history-section {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid rgba(255, 192, 224, 0.5);
+        }
+
+        .history-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .history-item {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s;
+        }
+
+        .history-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 6px 20px rgba(255, 105, 180, 0.2);
+        }
+
+        .history-info {
+            flex: 1;
+        }
+
+        .history-text {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .history-date {
+            font-size: 0.85em;
+            color: #999;
+        }
+
+        .history-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .history-btn {
+            padding: 8px 16px;
+            background: white;
+            border: 2px solid #ffc0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        .history-btn:hover {
+            background: #ff69b4;
+            color: white;
+            border-color: #ff69b4;
+        }
+
+        /* ローディングメッセージ */
+        .loading-message {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+            color: #ff69b4;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .loading-message.active {
+            display: block;
+            animation: pulse 1.5s ease infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* アラート */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        .alert.active {
+            display: block;
+        }
+
+        .alert.error {
+            background: rgba(255, 0, 0, 0.1);
+            color: #d00;
+            border: 2px solid rgba(255, 0, 0, 0.3);
+        }
+
+        .alert.success {
+            background: rgba(0, 200, 100, 0.1);
+            color: #0a0;
+            border: 2px solid rgba(0, 200, 100, 0.3);
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .api-key-input {
+                width: 100%;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .emotion-buttons {
+                gap: 8px;
+            }
+
+            .emotion-btn {
+                font-size: 0.9em;
+                padding: 10px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ヘッダー -->
+        <header>
+            <div class="header-content">
+                <div class="header-title">
+                    <h1>🎀 AI Voice Studio</h1>
+                    <p>可愛い声を自由に生成</p>
+                </div>
+                <div class="api-key-section">
+                    <label for="apiKey">🔑 API Key</label>
+                    <input type="password" id="apiKey" class="api-key-input" placeholder="sk-...">
+                    <button class="test-btn" onclick="testAPIConnection()">🔍 接続テスト</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- アラート -->
+        <div id="alert" class="alert"></div>
+
+        <!-- タブ -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="prompt">✨ プロンプトで作る</button>
+            <button class="tab-btn" data-tab="clone">🎤 声をクローンする</button>
+        </div>
+
+        <!-- プロンプトモード -->
+        <div id="promptMode" class="mode-content active">
+            <div class="form-group">
+                <label>🎨 声のイメージ（プロンプト）</label>
+                <textarea id="voicePrompt" placeholder="例：明るく元気な10代の女の子。高めのトーン、語尾が跳ねる話し方、アニメキャラクターのような可愛らしさ"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>🎭 感情・トーン</label>
+                <div class="emotion-buttons">
+                    <button class="emotion-btn active" data-emotion="normal">😊 通常</button>
+                    <button class="emotion-btn" data-emotion="excited">⚡ 元気</button>
+                    <button class="emotion-btn" data-emotion="whisper">🌙 囁き</button>
+                    <button class="emotion-btn" data-emotion="moved">💕 感動</button>
+                    <button class="emotion-btn" data-emotion="crying">😢 泣き声</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>💬 台詞（読み上げるテキスト）</label>
+                <textarea id="promptScript" placeholder="こんにちは！今日もよろしくね♪"></textarea>
+            </div>
+
+            <button class="generate-btn" id="generatePromptBtn">🎵 音声を生成する</button>
+            <div class="loading-message" id="promptLoading">🎵 音声を生成中...</div>
+
+            <!-- 音声プレイヤー -->
+            <div class="audio-player" id="promptPlayer">
+                <div class="player-controls">
+                    <button class="play-btn" id="promptPlayBtn">▶</button>
+                    <div class="waveform">
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                    </div>
+                </div>
+                <button class="download-btn" id="promptDownloadBtn">⬇ ダウンロード</button>
+            </div>
+        </div>
+
+        <!-- ボイスクローンモード -->
+        <div id="cloneMode" class="mode-content">
+            <div class="form-group">
+                <label>🎤 音声/動画ファイルをアップロード</label>
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">🎵</div>
+                    <div class="upload-text">音声・動画ファイルをドロップ</div>
+                    <div class="upload-hint">MP3, WAV, MP4対応（最大25MB）</div>
+                </div>
+                <input type="file" id="fileInput" class="file-input" accept="audio/*,video/*">
+                
+                <div class="file-preview" id="filePreview">
+                    <div class="file-info">
+                        <span>📁</span>
+                        <span class="file-name" id="fileName"></span>
+                    </div>
+                    <audio controls id="previewAudio" style="width: 100%; display: none;"></audio>
+                    <video controls id="previewVideo" style="width: 100%; max-height: 300px; display: none;"></video>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>💬 台詞（読み上げるテキスト）</label>
+                <textarea id="cloneScript" placeholder="こんにちは！今日もよろしくね♪"></textarea>
+            </div>
+
+            <button class="generate-btn" id="generateCloneBtn">🎤 クローン音声を生成する</button>
+            <div class="loading-message" id="cloneLoading">🎤 音声をクローン中...</div>
+
+            <!-- 音声プレイヤー -->
+            <div class="audio-player" id="clonePlayer">
+                <div class="player-controls">
+                    <button class="play-btn" id="clonePlayBtn">▶</button>
+                    <div class="waveform">
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                    </div>
+                </div>
+                <button class="download-btn" id="cloneDownloadBtn">⬇ ダウンロード</button>
+            </div>
+        </div>
+
+        <!-- 履歴 -->
+        <div class="history-section">
+            <h2 class="history-title">📜 生成履歴</h2>
+            <div class="history-list" id="historyList">
+                <!-- 履歴アイテムが動的に追加されます -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // グローバル変数
+        let currentEmotion = 'normal';
+        let promptAudioUrl = null;
+        let cloneAudioUrl = null;
+        let uploadedFile = null;
+        let history = JSON.parse(localStorage.getItem('voiceHistory') || '[]');
+
+        // 感情タグのマッピング
+        const emotionTags = {
+            normal: '',
+            excited: '[excited]',
+            whisper: '[whispers]',
+            moved: '[emotional]',
+            crying: '[sad, crying]'
+        };
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            initTabs();
+            initEmotionButtons();
+            initUpload();
+            initGenerateButtons();
+            initPlayButtons();
+            loadHistory();
+        });
+
+        // タブ切り替え
+        function initTabs() {
+            const tabs = document.querySelectorAll('.tab-btn');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const targetTab = this.dataset.tab;
+                    
+                    // タブのアクティブ状態を更新
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // コンテンツの表示切り替え
+                    document.querySelectorAll('.mode-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    if (targetTab === 'prompt') {
+                        document.getElementById('promptMode').classList.add('active');
+                    } else {
+                        document.getElementById('cloneMode').classList.add('active');
+                    }
+                });
+            });
+        }
+
+        // 感情ボタン
+        function initEmotionButtons() {
+            const emotionBtns = document.querySelectorAll('.emotion-btn');
+            emotionBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    emotionBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentEmotion = this.dataset.emotion;
+                });
+            });
+        }
+
+        // ファイルアップロード
+        function initUpload() {
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+
+            uploadArea.addEventListener('click', () => fileInput.click());
+
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                const file = e.dataTransfer.files[0];
+                handleFile(file);
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                handleFile(file);
+            });
+        }
+
+        function handleFile(file) {
+            if (!file) return;
+
+            // ファイルサイズチェック (25MB)
+            if (file.size > 25 * 1024 * 1024) {
+                showAlert('error', 'ファイルサイズは25MB以下にしてください');
+                return;
+            }
+
+            // ファイルタイプチェック
+            const validTypes = ['audio/mpeg', 'audio/wav', 'audio/mp3', 'video/mp4', 'video/quicktime'];
+            if (!validTypes.includes(file.type)) {
+                showAlert('error', 'MP3, WAV, MP4形式のファイルをアップロードしてください');
+                return;
+            }
+
+            uploadedFile = file;
+            
+            // プレビュー表示
+            const filePreview = document.getElementById('filePreview');
+            const fileName = document.getElementById('fileName');
+            const previewAudio = document.getElementById('previewAudio');
+            const previewVideo = document.getElementById('previewVideo');
+
+            fileName.textContent = file.name;
+            filePreview.classList.add('active');
+
+            const url = URL.createObjectURL(file);
+
+            if (file.type.startsWith('audio/')) {
+                previewAudio.src = url;
+                previewAudio.style.display = 'block';
+                previewVideo.style.display = 'none';
+            } else if (file.type.startsWith('video/')) {
+                previewVideo.src = url;
+                previewVideo.style.display = 'block';
+                previewAudio.style.display = 'none';
+            }
+        }
+
+        // 生成ボタン
+        function initGenerateButtons() {
+            document.getElementById('generatePromptBtn').addEventListener('click', generatePromptVoice);
+            document.getElementById('generateCloneBtn').addEventListener('click', generateCloneVoice);
+        }
+
+        // プロンプトモードで音声生成
+        async function generatePromptVoice() {
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const voicePrompt = document.getElementById('voicePrompt').value.trim();
+            const script = document.getElementById('promptScript').value.trim();
+
+            // バリデーション
+            if (!apiKey) {
+                showAlert('error', 'APIキーを入力してください');
+                return;
+            }
+
+            if (!voicePrompt) {
+                showAlert('error', '声のイメージを入力してください');
+                return;
+            }
+
+            if (!script) {
+                showAlert('error', '台詞を入力してください');
+                return;
+            }
+
+            const btn = document.getElementById('generatePromptBtn');
+            const loading = document.getElementById('promptLoading');
+            
+            btn.disabled = true;
+            btn.classList.add('loading');
+            loading.classList.add('active');
+
+            try {
+                // 感情タグを追加したプロンプト
+                const fullPrompt = `${emotionTags[currentEmotion]} ${voicePrompt}`.trim();
+
+                console.log('Sending request to API...');
+                console.log('Model: elevenlabs/v3-tts');
+                console.log('Voice description:', fullPrompt);
+
+                const response = await fetch('https://api.genspark.ai/v1/audio/speech', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: 'elevenlabs/v3-tts',
+                        input: script,
+                        voice: {
+                            type: 'voice_description',
+                            voice_description: fullPrompt
+                        }
+                    })
+                });
+
+                console.log('Response status:', response.status);
+
+                if (!response.ok) {
+                    let errorMessage = `API Error: ${response.status}`;
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.message || errorData.error || errorMessage;
+                        console.error('API Error details:', errorData);
+                    } catch (e) {
+                        const errorText = await response.text();
+                        console.error('API Error text:', errorText);
+                        if (errorText) errorMessage = errorText;
+                    }
+                    throw new Error(errorMessage);
+                }
+
+                const audioBlob = await response.blob();
+                console.log('Audio blob size:', audioBlob.size, 'bytes');
+                
+                promptAudioUrl = URL.createObjectURL(audioBlob);
+
+                // プレイヤー表示
+                document.getElementById('promptPlayer').classList.add('active');
+                
+                // 履歴に追加
+                addToHistory('prompt', script, promptAudioUrl, fullPrompt);
+
+                showAlert('success', '✨ 音声生成が完了しました！');
+            } catch (error) {
+                console.error('Error:', error);
+                let errorMsg = error.message;
+                
+                // ユーザーフレンドリーなエラーメッセージ
+                if (errorMsg.includes('Failed to fetch')) {
+                    errorMsg = 'APIサーバーに接続できません。APIキーが正しいか、ネットワーク接続を確認してください。';
+                } else if (errorMsg.includes('401')) {
+                    errorMsg = 'APIキーが無効です。正しいAPIキーを入力してください。';
+                } else if (errorMsg.includes('429')) {
+                    errorMsg = 'APIリクエスト制限に達しました。しばらく待ってから再試行してください。';
+                }
+                
+                showAlert('error', `エラー: ${errorMsg}`);
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('loading');
+                loading.classList.remove('active');
+            }
+        }
+
+        // ボイスクローンモードで音声生成
+        async function generateCloneVoice() {
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const script = document.getElementById('cloneScript').value.trim();
+
+            // バリデーション
+            if (!apiKey) {
+                showAlert('error', 'APIキーを入力してください');
+                return;
+            }
+
+            if (!uploadedFile) {
+                showAlert('error', '音声または動画ファイルをアップロードしてください');
+                return;
+            }
+
+            if (!script) {
+                showAlert('error', '台詞を入力してください');
+                return;
+            }
+
+            const btn = document.getElementById('generateCloneBtn');
+            const loading = document.getElementById('cloneLoading');
+            
+            btn.disabled = true;
+            btn.classList.add('loading');
+            loading.classList.add('active');
+
+            try {
+                // Step 1: ファイルをBase64に変換
+                let audioFile = uploadedFile;
+                
+                // 動画の場合は音声抽出が必要だが、ブラウザで完全な実装は困難
+                // 実際のプロダクションではサーバー側で処理すべき
+                if (uploadedFile.type.startsWith('video/')) {
+                    btn.disabled = false;
+                    btn.classList.remove('loading');
+                    loading.classList.remove('active');
+                    showAlert('error', '動画からの音声抽出は現在のバージョンでは未対応です。音声ファイル(MP3/WAV)をアップロードしてください。');
+                    return;
+                }
+
+                console.log('Converting file to base64...');
+                const base64Audio = await fileToBase64(audioFile);
+                console.log('Base64 conversion complete');
+
+                // Step 2: ボイスクローン実行
+                loading.textContent = '🎤 声を解析中...';
+                console.log('Sending voice clone request...');
+                
+                const cloneResponse = await fetch('https://api.genspark.ai/v1/audio/speech', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: 'elevenlabs/voice-clone',
+                        voice_files: [base64Audio]
+                    })
+                });
+
+                console.log('Clone response status:', cloneResponse.status);
+
+                if (!cloneResponse.ok) {
+                    let errorMessage = `Voice Clone Error: ${cloneResponse.status}`;
+                    try {
+                        const errorData = await cloneResponse.json();
+                        errorMessage = errorData.message || errorData.error || errorMessage;
+                        console.error('Clone API Error details:', errorData);
+                    } catch (e) {
+                        const errorText = await cloneResponse.text();
+                        console.error('Clone API Error text:', errorText);
+                        if (errorText) errorMessage = errorText;
+                    }
+                    throw new Error(errorMessage);
+                }
+
+                const cloneData = await cloneResponse.json();
+                const voiceId = cloneData.voice_id;
+                console.log('Voice cloned successfully, voice_id:', voiceId);
+
+                // Step 3: クローン音声でTTS生成
+                loading.textContent = '🎵 音声を生成中...';
+                console.log('Sending TTS request with cloned voice...');
+                
+                const ttsResponse = await fetch('https://api.genspark.ai/v1/audio/speech', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: 'elevenlabs/v3-tts',
+                        input: script,
+                        voice: {
+                            type: 'custom_voice_id',
+                            voice_id: voiceId
+                        }
+                    })
+                });
+
+                console.log('TTS response status:', ttsResponse.status);
+
+                if (!ttsResponse.ok) {
+                    let errorMessage = `TTS Error: ${ttsResponse.status}`;
+                    try {
+                        const errorData = await ttsResponse.json();
+                        errorMessage = errorData.message || errorData.error || errorMessage;
+                        console.error('TTS API Error details:', errorData);
+                    } catch (e) {
+                        const errorText = await ttsResponse.text();
+                        console.error('TTS API Error text:', errorText);
+                        if (errorText) errorMessage = errorText;
+                    }
+                    throw new Error(errorMessage);
+                }
+
+                const audioBlob = await ttsResponse.blob();
+                console.log('Audio blob size:', audioBlob.size, 'bytes');
+                
+                cloneAudioUrl = URL.createObjectURL(audioBlob);
+
+                // プレイヤー表示
+                document.getElementById('clonePlayer').classList.add('active');
+                
+                // 履歴に追加
+                addToHistory('clone', script, cloneAudioUrl, uploadedFile.name);
+
+                showAlert('success', '✨ クローン音声生成が完了しました！');
+            } catch (error) {
+                console.error('Error:', error);
+                let errorMsg = error.message;
+                
+                // ユーザーフレンドリーなエラーメッセージ
+                if (errorMsg.includes('Failed to fetch')) {
+                    errorMsg = 'APIサーバーに接続できません。APIキーが正しいか、ネットワーク接続を確認してください。';
+                } else if (errorMsg.includes('401')) {
+                    errorMsg = 'APIキーが無効です。正しいAPIキーを入力してください。';
+                } else if (errorMsg.includes('429')) {
+                    errorMsg = 'APIリクエスト制限に達しました。しばらく待ってから再試行してください。';
+                }
+                
+                showAlert('error', `エラー: ${errorMsg}`);
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('loading');
+                loading.classList.remove('active');
+                loading.textContent = '🎤 音声をクローン中...';
+            }
+        }
+
+        // ファイルをBase64に変換
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // 再生ボタン
+        function initPlayButtons() {
+            const promptPlayBtn = document.getElementById('promptPlayBtn');
+            const clonePlayBtn = document.getElementById('clonePlayBtn');
+
+            let promptAudio = null;
+            let cloneAudio = null;
+
+            promptPlayBtn.addEventListener('click', () => {
+                if (!promptAudioUrl) return;
+
+                if (!promptAudio) {
+                    promptAudio = new Audio(promptAudioUrl);
+                }
+
+                if (promptAudio.paused) {
+                    promptAudio.play();
+                    promptPlayBtn.textContent = '⏸';
+                } else {
+                    promptAudio.pause();
+                    promptPlayBtn.textContent = '▶';
+                }
+
+                promptAudio.onended = () => {
+                    promptPlayBtn.textContent = '▶';
+                };
+            });
+
+            clonePlayBtn.addEventListener('click', () => {
+                if (!cloneAudioUrl) return;
+
+                if (!cloneAudio) {
+                    cloneAudio = new Audio(cloneAudioUrl);
+                }
+
+                if (cloneAudio.paused) {
+                    cloneAudio.play();
+                    clonePlayBtn.textContent = '⏸';
+                } else {
+                    cloneAudio.pause();
+                    clonePlayBtn.textContent = '▶';
+                }
+
+                cloneAudio.onended = () => {
+                    clonePlayBtn.textContent = '▶';
+                };
+            });
+
+            // ダウンロードボタン
+            document.getElementById('promptDownloadBtn').addEventListener('click', () => {
+                if (promptAudioUrl) {
+                    downloadAudio(promptAudioUrl, 'voice_prompt.mp3');
+                }
+            });
+
+            document.getElementById('cloneDownloadBtn').addEventListener('click', () => {
+                if (cloneAudioUrl) {
+                    downloadAudio(cloneAudioUrl, 'voice_clone.mp3');
+                }
+            });
+        }
+
+        // 音声ダウンロード
+        function downloadAudio(url, filename) {
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        // 履歴管理
+        function addToHistory(type, text, audioUrl, detail) {
+            const historyItem = {
+                id: Date.now(),
+                type: type,
+                text: text,
+                audioUrl: audioUrl,
+                detail: detail,
+                date: new Date().toLocaleString('ja-JP')
+            };
+
+            history.unshift(historyItem);
+            
+            // 最大5件まで保持
+            if (history.length > 5) {
+                history = history.slice(0, 5);
+            }
+
+            // audioUrlはlocalStorageに保存できないので除外
+            const historyForStorage = history.map(item => ({
+                ...item,
+                audioUrl: null
+            }));
+            localStorage.setItem('voiceHistory', JSON.stringify(historyForStorage));
+
+            loadHistory();
+        }
+
+        function loadHistory() {
+            const historyList = document.getElementById('historyList');
+            
+            if (history.length === 0) {
+                historyList.innerHTML = '<p style="text-align: center; color: #999;">まだ履歴がありません</p>';
+                return;
+            }
+
+            historyList.innerHTML = history.map(item => `
+                <div class="history-item">
+                    <div class="history-info">
+                        <div class="history-text">${item.text}</div>
+                        <div class="history-date">${item.date} | ${item.type === 'prompt' ? 'プロンプト' : 'クローン'}</div>
+                    </div>
+                    <div class="history-controls">
+                        ${item.audioUrl ? `
+                            <button class="history-btn" onclick="playHistoryAudio('${item.audioUrl}')">▶ 再生</button>
+                            <button class="history-btn" onclick="downloadHistoryAudio('${item.audioUrl}', ${item.id})">⬇</button>
+                        ` : '<span style="color: #999; font-size: 0.85em;">再生不可</span>'}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 履歴の音声再生
+        window.playHistoryAudio = function(url) {
+            if (!url) return;
+            const audio = new Audio(url);
+            audio.play();
+        };
+
+        // 履歴の音声ダウンロード
+        window.downloadHistoryAudio = function(url, id) {
+            if (!url) return;
+            downloadAudio(url, `voice_${id}.mp3`);
+        };
+
+        // アラート表示
+        function showAlert(type, message) {
+            const alert = document.getElementById('alert');
+            alert.className = `alert ${type} active`;
+            alert.textContent = message;
+
+            setTimeout(() => {
+                alert.classList.remove('active');
+            }, 5000);
+        }
+
+        // API接続テスト
+        async function testAPIConnection() {
+            const apiKey = document.getElementById('apiKey').value.trim();
+            
+            if (!apiKey) {
+                showAlert('error', 'APIキーを入力してください');
+                return;
+            }
+
+            showAlert('success', '🔍 接続テスト中...');
+            
+            try {
+                console.log('Testing API connection...');
+                console.log('API Key (first 10 chars):', apiKey.substring(0, 10) + '...');
+                
+                const response = await fetch('https://api.genspark.ai/v1/audio/speech', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: 'elevenlabs/v3-tts',
+                        input: 'Test',
+                        voice: {
+                            type: 'voice_description',
+                            voice_description: 'A friendly voice'
+                        }
+                    })
+                });
+
+                console.log('Test response status:', response.status);
+                console.log('Test response headers:', Object.fromEntries(response.headers.entries()));
+                
+                if (response.ok) {
+                    showAlert('success', '✅ API接続成功！音声生成が利用可能です。');
+                } else {
+                    const errorText = await response.text();
+                    console.error('Test error response:', errorText);
+                    
+                    if (response.status === 401) {
+                        showAlert('error', '❌ APIキーが無効です。正しいAPIキーを確認してください。');
+                    } else if (response.status === 403) {
+                        showAlert('error', '❌ APIキーに権限がありません。');
+                    } else {
+                        showAlert('error', `❌ API接続エラー (${response.status}): ${errorText.substring(0, 100)}`);
+                    }
+                }
+            } catch (error) {
+                console.error('Test connection error:', error);
+                
+                if (error.message.includes('Failed to fetch')) {
+                    showAlert('error', '❌ ネットワークエラー: APIサーバーに接続できません。ブラウザのコンソールを確認してください。');
+                } else {
+                    showAlert('error', `❌ 接続テスト失敗: ${error.message}`);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
